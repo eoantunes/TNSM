@@ -181,7 +181,7 @@ for n in range(0, N):
     NrClientesAtendidos += int(X[n].solution_value())
     Xstrmatrix += str(int(X[n].solution_value())) + ' '
 Xstrmatrix += ']\n'
-print(str(NrClientesAtendidos) + ' pontos de demanda atendidos.')
+print(str(NrClientesAtendidos) + ' quadriculas atendidas.')
 #print(Xstrmatrix)
 
 NrAntenasInstaladas = 0
