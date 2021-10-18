@@ -176,26 +176,26 @@ print('Valor objetivo =', objetivo.Value())
 print()
 
 NrClientesAtendidos = 0
+NrQuadriculasCobertas = 0
 Xstrmatrix = '[ '
 for n in range(0, N):
-    NrClientesAtendidos += int(X[n].solution_value())
+    NrQuadriculasCobertas += int(X[n].solution_value())
+    NrClientesAtendidos += int(X[n].solution_value()) * Nij[nn[n][0]][nn[n][1]]
     Xstrmatrix += str(int(X[n].solution_value())) + ' '
 Xstrmatrix += ']\n'
-print(str(NrClientesAtendidos) + ' quadriculas atendidas.')
-#print(Xstrmatrix)
+print("Cobertura: {}%".format(100*NrQuadriculasCobertas/Smnp.shape[1]))
+print('{} quadrículas cobertas de um total de {} quadrículas com clientes.'.format(NrQuadriculasCobertas, Smnp.shape[1]))
+print(str(int(NrClientesAtendidos)) + ' clientes atendidos.')
+print("X " + Xstrmatrix)
 
 NrAntenasInstaladas = 0
-Ystrmatrix = '[ '
-Yindices = '[ '
 for m in range(0, M):
     for p in range(0, P):
         NrAntenasInstaladas += Y[m2a(m,p,P)].solution_value()
-        Ystrmatrix += str(int(Y[m2a(m,p,P)].solution_value())) + '\t'
-    Yindices += str(m) + '\t'
-Ystrmatrix += ']\n'
-Yindices += ']\n'
-print(str(NrAntenasInstaladas) + ' antenas instaladas em:')
-print(Ystrmatrix)
-print(Yindices)
+        if int(Y[m2a(m,p,P)].solution_value()) == 1:
+            print(Y[m2a(m,p,P)])
 
+print(str(int(NrAntenasInstaladas)) + ' eNodeBs instalados.')
+
+print()
 print('Tempo gasto no processamento = ' + str(depois - antes))
