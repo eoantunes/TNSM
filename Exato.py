@@ -115,6 +115,17 @@ for m in range(0, M):
     for n in range(0, N):
         ct.SetCoefficient(Z[m2a(m, n, N)], Nij[nn[n][0]][nn[n][1]])
 
+# As quadrículas de clientes Nij só podem ser associadas a eNodeBs instaladas ou ativadas --> Somatório (pEP) Ymp = 1
+# Se uma antena Mij está desativada então não devem haver clientes associados a ela:
+for m in range(0, M):
+    ct = solver.Constraint(-1000, 0, str(head))
+    head += 1
+    for n in range(0, N):
+        ct.SetCoefficient(Z[m2a(m, n, N)], Nij[nn[n][0]][nn[n][1]])
+    for p in range(0, P):
+        ct.SetCoefficient(Y[m2a(m, p, P)], -250)
+
+
 
 # Restrição (3): Número máximo de antenas instaladas ==> Somatório (mEM) Somatório (pEP) ymp <= Ant
 ct = solver.Constraint(Interc, Ant, str(head))
@@ -182,6 +193,7 @@ print()
 
 NrClientesAtendidos = 0
 NrQuadriculasCobertas = 0
+NrAssociacoes = 0
 Xstrmatrix = '[ '
 for n in range(0, N):
     NrQuadriculasCobertas += int(X[n].solution_value())
@@ -206,10 +218,10 @@ print()
 print("Associações de quadrículas de eNodeBs Mij e quadrículas de clientes Nij:")
 for m in range(0, M):
     for n in range(0, N):
-        if Z[m2a(m, n, N)] == 1:
+        if int(Z[m2a(m, n, N)].solution_value()) == 1:
+            NrAssociacoes += 1
             print(Z[m2a(m, n, N)])
-        else:
-            print("Opa, apareceu Zmn = 0!")
+print("Número de associações = %d" % NrAssociacoes)
 
 
 print()
