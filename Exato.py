@@ -1,6 +1,5 @@
 from ortools.linear_solver import pywraplp
 import numpy as np
-import time
 
 ###   Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
 I,J = 12,15
@@ -10,11 +9,6 @@ def m2a(i,j,line_length):
 
 # Declaração do solver ORTools considerando a biblioteca CBC do Google
 solver = pywraplp.Solver("Exato", pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
-
-# registro do momento do início do processamento
-antes = time.time()
-
-
 
 ##################
 # Parametrização #
@@ -83,6 +77,7 @@ head = 0
 
 # Restrição (1):  Somatório (mEM) Somatório (pEP) ymp.cmnp >= xn para todo nEN
 #                 Somatório (mEM) Somatório (pEP) ymp.cmnp - xn >= 0 para todo nEN
+# Para que um cliente seja atendido (Xn = 1), ao menos uma antena que lhe dê cobertura deve ser instalada
 for n in range(0, N):
     ct = solver.Constraint(0, Ant, str(head))
     ct.SetCoefficient(X[n], -1)
@@ -100,7 +95,7 @@ for n in range(0, N):
             #ct.SetCoefficient(X[n]*Y[m2a(m, p, P)], int(Cmnp[m][n][p]))
 #            ct.SetCoefficient(X[n], int(Cmnp[m][n][p] * Nij[nn[n][0]][nn[n][1]]))
 
-# Cada quadrícula de cliente Nij só pode ser atendida ou associada a uma eNodeB
+# Restrição (2): Cada quadrícula de cliente Nij só pode ser atendida ou associada a uma eNodeB
 for n in range(0, N):
     ct = solver.Constraint(0, 0, str(head))
     ct.SetCoefficient(X[n], -1)
@@ -108,14 +103,14 @@ for n in range(0, N):
     for m in range(0, M):
         ct.SetCoefficient(Z[m2a(m, n, N)], 1)
 
-# Cada eNodeB não pode atender ou ter mais clientes associados que sua capacidade máxima = Usu
+# Restrição (3): Cada eNodeB não pode atender ou ter mais clientes associados que sua capacidade máxima = Usu
 for m in range(0, M):
     ct = solver.Constraint(0, Usu, str(head))
     head += 1
     for n in range(0, N):
         ct.SetCoefficient(Z[m2a(m, n, N)], Nij[nn[n][0]][nn[n][1]])
 
-# As quadrículas de clientes Nij só podem ser associadas a eNodeBs instaladas ou ativadas --> Somatório (pEP) Ymp = 1
+# Restrição (4): As quadrículas de clientes Nij só podem ser associadas a eNodeBs instaladas ou ativadas --> Somatório (pEP) Ymp = 1
 # Se uma antena Mij está desativada então não devem haver clientes associados a ela:
 for m in range(0, M):
     ct = solver.Constraint(-1000, 0, str(head))
@@ -125,16 +120,14 @@ for m in range(0, M):
     for p in range(0, P):
         ct.SetCoefficient(Y[m2a(m, p, P)], -250)
 
-
-
-# Restrição (3): Número máximo de antenas instaladas ==> Somatório (mEM) Somatório (pEP) ymp <= Ant
+# Restrição (5): Número máximo de antenas instaladas ==> Somatório (mEM) Somatório (pEP) ymp <= Ant
 ct = solver.Constraint(Interc, Ant, str(head))
 for m in range(0, M):
     for p in range(0, P):
         ct.SetCoefficient(Y[m2a(m, p, P)], 1)
 head += 1
 
-# Restrição (4): Número mínimo de antenas interconectadas - ROA 65
+# Restrição (6): Número mínimo de antenas interconectadas - ROA 65
 for m in range(0, M):
     for p in range(0, P):
         ct = solver.Constraint(Interc, Ant, str(head))
@@ -144,7 +137,7 @@ for m in range(0, M):
             for z in range(0, P):
                 ct.SetCoefficient(Y[m2a(k, z, P)], int(A[m][k][p][z]))
 
-# Restrição (5): Uma eNodeB só pode ter uma potência de transmissão (pTx) ativada
+# Restrição (7): Uma eNodeB só pode ter uma potência de transmissão (pTx) ativada
 for m in range(0, M):
     ct = solver.Constraint(0, 1, str(head))
     head += 1
@@ -175,14 +168,8 @@ for m in range(0, M):
 for n in range(0, N):
     objetivo.SetCoefficient(X[n], 1)
 
-# Minimização do custo de associação
-#for m in range(0, M):
-#    for n in range(0, N):
-#        objetivo.SetCoefficient(Z[m2a(m, n, N)], -1)
-
 objetivo.SetMaximization()
 solver.Solve()
-depois = time.time()
 
 #################################
 # Imprimindo a solução no shell #
@@ -223,10 +210,6 @@ for m in range(0, M):
             print(Z[m2a(m, n, N)])
 print("Número de associações = %d" % NrAssociacoes)
 
-
 print()
-print('Tempo gasto no processamento (time) = ' + str(depois - antes))
-print("Tempo de processamento = %f" % solver.wall_time())
-print("Iterações: %d" % solver.iterations())
-print("Problema resolvido usando %d branch-and-bound nós" % solver.nodes())
+print("Tempo de processamento = %f" % (solver.wall_time()/1000))
 

@@ -1,35 +1,150 @@
 import pygad
-import numpy
+import numpy as np
 import random
 import time
 import matplotlib.pyplot as plt
-import parametros as p
 
+###   Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
+I,J = 12,15
+
+Mij = np.loadtxt('matriz_M{}{}.txt'.format(I,J))
+Nij = np.loadtxt('matriz_N{}{}.txt'.format(I,J))
+
+loaded_Smnp = np.loadtxt('matriz_Smnp{}{}.txt'.format(I,J))
+Smnp = loaded_Smnp.reshape(loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5)
+
+loaded_Cmnp = np.loadtxt('matriz_Cmnp{}{}.txt'.format(I,J))
+Cmnp = loaded_Cmnp.reshape(loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
+
+loaded_A = np.loadtxt('matriz_A{}{}.txt'.format(I,J))
+A = loaded_A.reshape(loaded_A.shape[0], loaded_A.shape[0], 5, 5)
+
+# Tuplas das quadrículas aptas a receber um eNodeB
+mm = []
+for i in range(len(Mij)):
+    for j in range(len(Mij[0])):
+        if Mij[i][j] == 1:
+            mm.append((i,j))
+# Tuplas dos índices das quadrículas que possuem clientes
+nn = []
+for i in range(len(Nij)):
+    for j in range(len(Nij[0])):
+        if Nij[i][j] != 0:
+            nn.append((i,j))
+
+##############################
+M = Smnp.shape[0]  # Nr de pontos de demanda
+N = Smnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
+P = Smnp.shape[2]  # Nr de potências sendo avaliadas
+Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó de acesso + 1 Centro de Coordenação)
+Usu = 100  # Nr máximo de usuários associados a uma eNodeB
+Interc = 1 # Nr mínimo de nós interconectados
+
+##############################
+# Parâmetros exclusivos do Algorítmo Genético
+# Parâmetros definidos pela técnica de otimização Hyperas
+generations = 10#78                                # hyperopt[10 a 100]
+population_size = 20#100                           # hyperopt[10 a 200]
+crossover_probability = 0.7719049380928529      # hyperopt[0.1 a 1 ]
+mutation_probability = 0.7861998735112282        # hyperopt[10 a 100]       # valores em %, ou seja, >= 0 e <=100
+parents = 8                                     # hyperopt[2  a 20 ]       # Número de pais a serem selecionados
+#elitism = -1                                     # hyperopt[1  a  2 ]
+
+
+##########   FATORES DA AVALIAÇÃO   ##########
+# Métodos de Seleção (parent_selection_type):
+"""
+sss (for steady-state selection),           <- (estado estável)
+rws (for roulette wheel selection),         <- (roleta)
+sus (for stochastic universal selection),   <- (estocástico) 
+rank (for rank selection),                  <- (truncamento)
+random (for random selection),              <- (aleatório) 
+tournament (for tournament selection)       <- (torneio)
+"""
+parent_selection_type = "rank"
+
+
+# Métodos de Reprodução (crossover_type):
+"""
+single_point (for single-point crossover),  <- (ponto simples)
+two_points (for two points crossover),      <- (dois pontos)
+uniform (for uniform crossover),            <- (uniforme)
+scattered (for scattered crossover).        <- (espalhamento)
+"""
+crossover_type = "single_point"
+
+
+# Métodos de Mutação (mutation_type):
+"""
+random (for random mutation),               <- (aleatório)
+swap (for swap mutation),                   <- (troca)
+inversion (for inversion mutation),         <- (inversão)
+scramble (for scramble mutation),           <- (embaralhamento)
+adaptive (for adaptive mutation).           <- (adaptativo)
+"""
+mutation_type = "inversion"
+
+# Cria um indivíduo aleatoriamente
 def individual():
-    vetorAux = [-1] * p.A
-    for i in range(p.A):
-        valorAux = random.randint(0, p.individual_size - 1)
-        if valorAux not in vetorAux:
-            vetorAux[i] = valorAux
-    individual = [0] * p.individual_size
-    for i in vetorAux:
-        individual[i] = 1
-    return individual
+    NrAntenas = random.randint(Interc, Ant)
+    individual = np.zeros((M, P))
+    for i in range(NrAntenas):
+        individual[random.randint(0, M - 1)][random.randint(0, P-1)] = 1
+    return individual.reshape(M*P)
 
 def fitness(solution, solution_idx):
-    fitness = 0
-    for i in range(p.M):
-        aux = 0
-        for j in range(p.N):
-            aux += p.C[i][j] * solution[j]
-        if aux > 0:
-            fitness += 1
+    sol = solution.reshape(M,P)
+
+    # Maximização da cobertura
+    cliNaoAtendidos = np.zeros((N))
+    for n in range(N):
+        cliNaoAtendidos[n] = Nij[nn[n][0]][nn[n][1]]
+
+    for m in range(M):
+        aux = 0 # Nr de clientes atendidos por eNodeB
+        for n in range(N):
+            for p in range(P):
+                if aux < Usu and sol[m][p] == 1:
+                    aux += Cmnp[m][n][p] * sol[m][p] * cliNaoAtendidos[n]
+                    cliNaoAtendidos[n] = 0
+                    if aux > Usu:
+                        cliNaoAtendidos[n] = aux - Usu
+                        aux = Usu
+
+    nrTotalClientes = 0
+    nrClientesNaoAtendidos = 0
+    for n in range(N):
+        nrTotalClientes += Nij[nn[n][0]][nn[n][1]]
+        nrClientesNaoAtendidos += cliNaoAtendidos[n]
+
+    nrClientesAtendidos = nrTotalClientes - nrClientesNaoAtendidos
+
+
+    # Minimização da interferência
+    grauInterf = 0
+    for n in range(N):
+        aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
+        for m in range(M):
+            for p in range(P):
+                aux += Cmnp[m][n][p] * sol[m][p]
         if aux > 1:
-            fitness -= 1
-    return fitness
+            grauInterf += aux
+
+    # Minimização do número de eNodeBs instaladas
+    nr_eNodeBs = 0
+    for m in range(M):
+        for p in range(P):
+            nr_eNodeBs += sol[m][p]
+
+
+    if nr_eNodeBs > Ant: # Punição ampliada para excesso de eNodeBs
+        return (5 * nrClientesAtendidos - 10 * nr_eNodeBs - grauInterf)
+    else:
+        return (5 * nrClientesAtendidos - 2 * nr_eNodeBs - grauInterf)
+
 
 def create_population():
-    return [individual() for i in range(p.population_size)]
+    return [individual() for i in range(population_size)]
 
 def callback_generation(ga_instance):     #CallBack para acessar as informações após cada geração
     global lastBestfitness
@@ -42,51 +157,29 @@ def callback_generation(ga_instance):     #CallBack para acessar as informaçõe
 
     # Captura do BestFitness para os gráficos de convergência
     best_fitness = ga_instance.best_solution()[1]
-    if best_fitness > p.objInExactAlgo[p.A]:
-        y[i_global][ga_instance.generations_completed - 1] += (p.objInExactAlgo[p.A])/iteracoes
-    else:
-        y[i_global][ga_instance.generations_completed - 1] += (best_fitness)/iteracoes
-
-    # Captura do Tempo e Geração para atingir 80%, 90% e 95% da solução ótima
-    if t80[i_global][it_global] == 0 and p.obj80 <= ga_instance.best_solution()[1]:
-        t80[i_global][it_global] = time.time() - antes_global
-        g80[i_global][it_global] = ga_instance.generations_completed
-    elif t90[i_global][it_global] == 0 and p.obj90 <= ga_instance.best_solution()[1]:
-        t90[i_global][it_global] = time.time() - antes_global
-        g90[i_global][it_global] = ga_instance.generations_completed
-    elif t95[i_global][it_global] == 0 and p.obj95 <= ga_instance.best_solution()[1]:
-        t95[i_global][it_global] = time.time() - antes_global
-        g95[i_global][it_global] = ga_instance.generations_completed
+    y[i_global][ga_instance.generations_completed - 1] += (best_fitness)/iteracoes
 
 ########################################################################################
-iteracoes = 200    ######################################################################
+iteracoes = 1    ######################################################################
 ########################################################################################
 lastBestfitness = 0
 i_global = 0    # variável que controla a mudança dos fatores (métodos de seleção, métodos de crossover e de mutação)
 it_global = 0
 antes_global = 0
-parent_selection_type = ['sss', 'rws', 'sus', 'rank', 'random', 'tournament']
-#crossover_type = ['single_point', 'two_points', 'uniform', 'scattered']
+#parent_selection_type = ['sss', 'rws', 'sus', 'rank', 'random', 'tournament']
+crossover_type = ['single_point', 'two_points', 'uniform', 'scattered']
 #mutation_type = ['random', 'swap', 'inversion', 'scramble', 'adaptive']
 
 # Variáveis utilizadas para impressão dos gráficos de convergência
-y = numpy.zeros((len(parent_selection_type), p.generations))            # --> mudar o array para avaliar outro fator
-x = numpy.arange(p.generations)
+y = np.zeros((len(crossover_type), generations))            # --> mudar o array para avaliar outro fator
+x = np.arange(generations)
 
 # Variáveis utilizadas para os boxplots e arquivo
-yTime = numpy.zeros((iteracoes, len(parent_selection_type)))            # --> mudar o array para avaliar outro fator
-yBFit = numpy.zeros((iteracoes, len(parent_selection_type)))            # --> mudar o array para avaliar outro fator
+yTime = np.zeros((iteracoes, len(crossover_type)))            # --> mudar o array para avaliar outro fator
+yBFit = np.zeros((iteracoes, len(crossover_type)))            # --> mudar o array para avaliar outro fator
 
-# Variáveis de velocidade para arquivo
-t80 = numpy.zeros((len(parent_selection_type), iteracoes))              # --> mudar o array para avaliar outro fator
-t90 = numpy.zeros((len(parent_selection_type), iteracoes))              # --> mudar o array para avaliar outro fator
-t95 = numpy.zeros((len(parent_selection_type), iteracoes))              # --> mudar o array para avaliar outro fator
-g80 = numpy.zeros((len(parent_selection_type), iteracoes))              # --> mudar o array para avaliar outro fator
-g90 = numpy.zeros((len(parent_selection_type), iteracoes))              # --> mudar o array para avaliar outro fator
-g95 = numpy.zeros((len(parent_selection_type), iteracoes))              # --> mudar o array para avaliar outro fator
-
-for i in range(len(parent_selection_type)):                             # --> mudar o array para avaliar outro fator
-    print("----------------------------Método {x}/{y}-------------------------------".format(x = i+1, y= len(parent_selection_type)))
+for i in range(len(crossover_type)):                             # --> mudar o array para avaliar outro fator
+    print("----------------------------Método {x}/{y}-------------------------------".format(x = i+1, y= len(crossover_type))) # --> mudar o array para avaliar outro fator
     i_global = i
 
     for it in range(iteracoes):
@@ -94,24 +187,78 @@ for i in range(len(parent_selection_type)):                             # --> mu
         it_global = it
         antes_global = time.time()
 
-        ga_instance = pygad.GA(num_generations=p.generations,
-                               num_parents_mating=p.parents,
+        ga_instance = pygad.GA(num_generations=generations,
+                               num_parents_mating=parents,
                                fitness_func=fitness,
                                initial_population=create_population(),
-                               num_genes=p.N,
-                               parent_selection_type=parent_selection_type[i],      # --> mudar o array para avaliar outro fator
-                               keep_parents=p.elitism,
-                               crossover_type=p.crossover_type,                     # --> mudar o array para avaliar outro fator
-                               crossover_probability=p.crossover_probability,
-                               mutation_type=p.mutation_type,                       # --> mudar o array para avaliar outro fator
-                               mutation_percent_genes=p.mutation_probability,
+                               gene_type=int,
+                               parent_selection_type=parent_selection_type,         # --> mudar o array para avaliar outro fator
+                               K_tournament=parents,
+                               #keep_parents=elitism,
+                               crossover_type=crossover_type[i],                    # --> mudar o array para avaliar outro fator
+                               crossover_probability=crossover_probability,
+                               mutation_type=mutation_type,                         # --> mudar o array para avaliar outro fator
+                               mutation_probability=mutation_probability,
                                on_generation=callback_generation)
         ga_instance.run()
 
 # As informações após todas gerações são coletadas aqui
         yTime[it][i_global] = time.time() - antes_global
         yBFit[it][i_global] = ga_instance.best_solution()[1]
+        ###   TESTES   ###
+        sol = ga_instance.best_solution()[0].reshape(M,P)
+        print(sol)
 
+        # Maximização da cobertura
+        cliNaoAtendidos = np.zeros((N))
+        for n in range(N):
+            cliNaoAtendidos[n] = Nij[nn[n][0]][nn[n][1]]
+        print(cliNaoAtendidos)
+
+        for m in range(M):
+            aux = 0  # Nr de clientes atendidos por eNodeB
+            quadriculasAtendidas = []
+            for n in range(N):
+                for p in range(P):
+                    if aux < Usu and sol[m][p] == 1:
+                        aux += Cmnp[m][n][p] * sol[m][p] * cliNaoAtendidos[n]
+                        cliNaoAtendidos[n] = 0
+                        quadriculasAtendidas.append(n)
+                        if aux > Usu:
+                            cliNaoAtendidos[n] = aux - Usu
+                            aux = Usu
+            print("Clientes atendidos pela eNodeB {} = {}".format(m, aux))
+            print("Quadrículas antendidas: {}".format(quadriculasAtendidas))
+
+        nrTotalClientes = 0
+        nrClientesNaoAtendidos = 0
+        for n in range(N):
+            nrTotalClientes += Nij[nn[n][0]][nn[n][1]]
+            nrClientesNaoAtendidos += cliNaoAtendidos[n]
+
+        nrClientesAtendidos = nrTotalClientes - nrClientesNaoAtendidos
+
+        # Minimização da interferência
+        grauInterf = 0
+        for n in range(N):
+            aux = 0  # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
+            for m in range(M):
+                for p in range(P):
+                    aux += Cmnp[m][n][p] * sol[m][p]
+            if aux > 1:
+                grauInterf += aux
+
+        # Minimização do número de eNodeBs instaladas
+        nr_eNodeBs = 0
+        for m in range(M):
+            for p in range(P):
+                nr_eNodeBs += sol[m][p]
+
+
+        print("Número de clientes atendidos = {}".format(nrClientesAtendidos))
+        print("Número de eNodeBs instalados = {}".format(nr_eNodeBs))
+        print("Grau de interferência = {}".format(grauInterf))
+        print("Bestfitness = {}".format(ga_instance.best_solution()[1]))
 
 
 ###########################
@@ -119,13 +266,16 @@ for i in range(len(parent_selection_type)):                             # --> mu
 ###########################
 
 #####     GRÁFICO DE CONVERGÊNCIA     #####
-plt.plot(x, numpy.ones(len(x)) * p.objInExactAlgo[p.A], 'b--', label='E_ALLOCATOR')
-plt.plot(x, y[0], label='M-ALLOCATOR-EE')
-plt.plot(x, y[1], label='M-ALLOCATOR-R')
-plt.plot(x, y[2], label='M-ALLOCATOR-E')
-plt.plot(x, y[3], label='M-ALLOCATOR-Tr')
-plt.plot(x, y[4], label='M-ALLOCATOR-A')
-plt.plot(x, y[5], label='M-ALLOCATOR-To')
+#plt.plot(x, y[0], label='M-ALLOCATOR-EE')
+#plt.plot(x, y[1], label='M-ALLOCATOR-R')
+#plt.plot(x, y[2], label='M-ALLOCATOR-E')
+#plt.plot(x, y[3], label='M-ALLOCATOR-Tr')
+#plt.plot(x, y[4], label='M-ALLOCATOR-A')
+#plt.plot(x, y[5], label='M-ALLOCATOR-To')
+plt.plot(x, y[0], label='M-ALLOCATOR-PS')
+plt.plot(x, y[1], label='M-ALLOCATOR-DP')
+plt.plot(x, y[2], label='M-ALLOCATOR-U')
+plt.plot(x, y[3], label='M-ALLOCATOR-Es')
 #plt.title('Convergência do AG com variação dos métodos de seleção')
 #plt.ylabel('Valor de aptidão médio de {} iterações'.format(iteracoes))
 #plt.xlabel('Geração')
@@ -139,7 +289,8 @@ plt.show()
 
 # Melhor fitness após todas gerações
 #labels = ['Estado estável', 'Roleta', 'Estocástico', 'Truncamento','Aleatório', 'Torneio']
-labels = ['EE', 'R', 'E', 'Tr','A', 'To']
+#labels = ['EE', 'R', 'E', 'Tr','A', 'To']
+labels = ['PS', 'DP', 'U', 'Es']
 plt.boxplot(yBFit, labels=labels)
 #plt.suptitle('Distribuição dos melhores valores de aptidão alcançados')
 #plt.title('por método de seleção')
@@ -149,7 +300,8 @@ plt.show()
 
 # Tempo gasto no processamento
 #labels = ['Estado estável', 'Roleta', 'Estocástico', 'Truncamento','Aleatório', 'Torneio']
-labels = ['EE', 'R', 'E', 'Tr','A', 'To']
+#labels = ['EE', 'R', 'E', 'Tr','A', 'To']
+labels = ['PS', 'DP', 'U', 'Es']
 plt.boxplot(yTime, labels=labels)
 #plt.title('Distribuição dos tempos de processamento por método de seleção')
 #plt.ylabel('Tempo de processamento ')
@@ -159,20 +311,10 @@ plt.show()
 
 
 #####   Salva em ARQUIVO para outras análises   #####
-t = numpy.asarray(yTime)
-b = numpy.asarray(yBFit)
-t80 = numpy.asarray(t80)
-t90 = numpy.asarray(t90)
-t95 = numpy.asarray(t95)
-g80 = numpy.asarray(g80)
-g90 = numpy.asarray(g90)
-g95 = numpy.asarray(g95)
+t = np.asarray(yTime)
+b = np.asarray(yBFit)
 
-numpy.savetxt('result_Selecao_time.txt', t, fmt="%f", delimiter=",")
-numpy.savetxt('result_Selecao_bFit.txt', b, fmt="%d", delimiter=",")
-numpy.savetxt('result_Selecao_t80.txt', t80, fmt="%f", delimiter=",")
-numpy.savetxt('result_Selecao_t90.txt', t90, fmt="%f", delimiter=",")
-numpy.savetxt('result_Selecao_t95.txt', t95, fmt="%f", delimiter=",")
-numpy.savetxt('result_Selecao_g80.txt', g80, fmt="%d", delimiter=",")
-numpy.savetxt('result_Selecao_g90.txt', g90, fmt="%d", delimiter=",")
-numpy.savetxt('result_Selecao_g95.txt', g95, fmt="%d", delimiter=",")
+#np.savetxt('result_Selecao_time.txt', t, fmt="%f")
+#np.savetxt('result_Selecao_bFit.txt', b, fmt="%d")
+#np.savetxt('result_Reproducao_time.txt', t, fmt="%f")
+#np.savetxt('result_Reproducao_bFit.txt', b, fmt="%d")
