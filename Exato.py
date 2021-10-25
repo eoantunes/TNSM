@@ -152,21 +152,30 @@ objetivo = solver.Objective()
 
 # Maximização do número de clientes atendidos ou cobertura
 for n in range(0, N):
-    #objetivo.SetCoefficient(X[n], maior(multVector(Y, C[i])) * Nij[nn[n][0]][nn[n][1]]) # Voltar para analisar a função top
-    objetivo.SetCoefficient(X[n], int(Nij[nn[n][0]][nn[n][1]]))
+    objetivo.SetCoefficient(X[n], int(5 * Nij[nn[n][0]][nn[n][1]]))
 
 # Minimização do número de eNodeBs empregadas
 for m in range (0, M):
     for p in range(0, P):
-        objetivo.SetCoefficient(Y[m2a(m, p, P)], -1)
+        objetivo.SetCoefficient(Y[m2a(m, p, P)], -10)
 
 # Minimização do grau de interferência
-for m in range(0, M):
-    for n in range(0, N):
-        for p in range(0, P):
-            objetivo.SetCoefficient(Y[m2a(m, p, P)], -1 * Cmnp[m][n][p])
-for n in range(0, N):
-    objetivo.SetCoefficient(X[n], 1)
+#for m in range(0, M):
+#    for n in range(0, N):
+#        for p in range(0, P):
+#            objetivo.SetCoefficient(Y[m2a(m, p, P)], -1 * Cmnp[m][n][p])
+#for n in range(0, N):
+#    objetivo.SetCoefficient(X[n], 1)
+
+#grauInterf = 0
+#for n in range(N):
+#    aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
+#    for m in range(M):
+#        for p in range(P):
+#            aux += Cmnp[m][n][p] * Y[m2a(m, p, P)]
+#    if aux > 1:
+#        grauInterf += aux
+
 
 objetivo.SetMaximization()
 solver.Solve()
@@ -192,12 +201,19 @@ print('{} quadrículas cobertas de um total de {} quadrículas com clientes.'.fo
 print(str(int(NrClientesAtendidos)) + ' clientes atendidos.')
 print("X " + Xstrmatrix)
 
+sol = np.zeros((M, P))
 NrAntenasInstaladas = 0
 for m in range(0, M):
     for p in range(0, P):
         NrAntenasInstaladas += Y[m2a(m,p,P)].solution_value()
         if int(Y[m2a(m,p,P)].solution_value()) == 1:
             print(Y[m2a(m,p,P)])
+            aux = str(Y[m2a(m,p,P)])
+            aux = aux[2:-1]
+            aux = aux.split(",")
+            m = int(aux[0])
+            p = int(aux[1])
+            sol[m][p] = 1
 
 print(str(int(NrAntenasInstaladas)) + ' eNodeBs instalados.')
 
@@ -213,3 +229,20 @@ print("Número de associações = %d" % NrAssociacoes)
 print()
 print("Tempo de processamento = %f" % (solver.wall_time()/1000))
 
+###################################################
+# Avaliando a solução e armazenando suas métricas #
+###################################################
+grauInterf = 0
+for n in range(N):
+    aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
+    for m in range(M):
+        for p in range(P):
+            aux += Cmnp[m][n][p] * sol[m][p]
+    if aux > 1:
+        grauInterf += aux
+valorObjetivo = 5 * NrClientesAtendidos - 10 * NrAntenasInstaladas - grauInterf
+
+print("Valor Objetivo = {}".format(valorObjetivo))
+print("Número de Clientes atendidos = %d" % NrClientesAtendidos)
+print("Número de eNodeBs instaladas = %d" % NrAntenasInstaladas)
+print("Grau de interferência = %d" % grauInterf)

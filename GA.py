@@ -43,8 +43,8 @@ Interc = 1 # Nr mínimo de nós interconectados
 ##############################
 # Parâmetros exclusivos do Algorítmo Genético
 # Parâmetros definidos pela técnica de otimização Hyperas
-generations = 10#78                                # hyperopt[10 a 100]
-population_size = 20#100                           # hyperopt[10 a 200]
+generations = 78                                # hyperopt[10 a 100]
+population_size = 100                           # hyperopt[10 a 200]
 crossover_probability = 0.7719049380928529      # hyperopt[0.1 a 1 ]
 mutation_probability = 0.7861998735112282        # hyperopt[10 a 100]       # valores em %, ou seja, >= 0 e <=100
 parents = 8                                     # hyperopt[2  a 20 ]       # Número de pais a serem selecionados
@@ -61,7 +61,7 @@ rank (for rank selection),                  <- (truncamento)
 random (for random selection),              <- (aleatório) 
 tournament (for tournament selection)       <- (torneio)
 """
-parent_selection_type = "rank"
+parent_selection_type = "sss"
 
 
 # Métodos de Reprodução (crossover_type):
@@ -86,9 +86,9 @@ mutation_type = "inversion"
 
 # Cria um indivíduo aleatoriamente
 def individual():
-    NrAntenas = random.randint(Interc, Ant)
+    NreNodeBs = random.randint(Interc, Ant)
     individual = np.zeros((M, P))
-    for i in range(NrAntenas):
+    for i in range(NreNodeBs):
         individual[random.randint(0, M - 1)][random.randint(0, P-1)] = 1
     return individual.reshape(M*P)
 
@@ -104,8 +104,8 @@ def fitness(solution, solution_idx):
         aux = 0 # Nr de clientes atendidos por eNodeB
         for n in range(N):
             for p in range(P):
-                if aux < Usu and sol[m][p] == 1:
-                    aux += Cmnp[m][n][p] * sol[m][p] * cliNaoAtendidos[n]
+                if aux < Usu and sol[m][p] == 1 and Cmnp[m][n][p] == 1 and cliNaoAtendidos[n] > 0:
+                    aux += cliNaoAtendidos[n]
                     cliNaoAtendidos[n] = 0
                     if aux > Usu:
                         cliNaoAtendidos[n] = aux - Usu
@@ -138,9 +138,9 @@ def fitness(solution, solution_idx):
 
 
     if nr_eNodeBs > Ant: # Punição ampliada para excesso de eNodeBs
-        return (5 * nrClientesAtendidos - 10 * nr_eNodeBs - grauInterf)
+        return (5 * nrClientesAtendidos - 100 * nr_eNodeBs - grauInterf)
     else:
-        return (5 * nrClientesAtendidos - 2 * nr_eNodeBs - grauInterf)
+        return (5 * nrClientesAtendidos - 10 * nr_eNodeBs - grauInterf)
 
 
 def create_population():
@@ -160,7 +160,7 @@ def callback_generation(ga_instance):     #CallBack para acessar as informaçõe
     y[i_global][ga_instance.generations_completed - 1] += (best_fitness)/iteracoes
 
 ########################################################################################
-iteracoes = 1    ######################################################################
+iteracoes = 5    ######################################################################
 ########################################################################################
 lastBestfitness = 0
 i_global = 0    # variável que controla a mudança dos fatores (métodos de seleção, métodos de crossover e de mutação)
@@ -207,28 +207,34 @@ for i in range(len(crossover_type)):                             # --> mudar o a
         yBFit[it][i_global] = ga_instance.best_solution()[1]
         ###   TESTES   ###
         sol = ga_instance.best_solution()[0].reshape(M,P)
-        print(sol)
+        #print(sol)
+
+
+
+
 
         # Maximização da cobertura
         cliNaoAtendidos = np.zeros((N))
         for n in range(N):
             cliNaoAtendidos[n] = Nij[nn[n][0]][nn[n][1]]
-        print(cliNaoAtendidos)
+        #print(cliNaoAtendidos)
 
         for m in range(M):
             aux = 0  # Nr de clientes atendidos por eNodeB
             quadriculasAtendidas = []
             for n in range(N):
                 for p in range(P):
-                    if aux < Usu and sol[m][p] == 1:
-                        aux += Cmnp[m][n][p] * sol[m][p] * cliNaoAtendidos[n]
+                    if aux < Usu and sol[m][p] == 1 and Cmnp[m][n][p] == 1 and cliNaoAtendidos[n] > 0:
+                        aux += cliNaoAtendidos[n]
                         cliNaoAtendidos[n] = 0
                         quadriculasAtendidas.append(n)
                         if aux > Usu:
                             cliNaoAtendidos[n] = aux - Usu
                             aux = Usu
             print("Clientes atendidos pela eNodeB {} = {}".format(m, aux))
-            print("Quadrículas antendidas: {}".format(quadriculasAtendidas))
+            if aux != 0:
+                print("Quadrículas antendidas: {}".format(quadriculasAtendidas))
+                print("Clientes NÃO atendidos: {}".format(cliNaoAtendidos))
 
         nrTotalClientes = 0
         nrClientesNaoAtendidos = 0
@@ -253,6 +259,8 @@ for i in range(len(crossover_type)):                             # --> mudar o a
         for m in range(M):
             for p in range(P):
                 nr_eNodeBs += sol[m][p]
+
+
 
 
         print("Número de clientes atendidos = {}".format(nrClientesAtendidos))
