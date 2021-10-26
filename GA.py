@@ -48,7 +48,7 @@ population_size = 100                           # hyperopt[10 a 200]
 crossover_probability = 0.7719049380928529      # hyperopt[0.1 a 1 ]
 mutation_probability = 0.7861998735112282        # hyperopt[10 a 100]       # valores em %, ou seja, >= 0 e <=100
 parents = 8                                     # hyperopt[2  a 20 ]       # Número de pais a serem selecionados
-elitism = -1                                     # hyperopt[1  a  2 ]
+elitism = 1                                     # hyperopt[1  a  2 ]
 
 
 ##########   FATORES DA AVALIAÇÃO   ##########
