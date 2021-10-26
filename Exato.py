@@ -50,6 +50,13 @@ Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó 
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
 Interc = 1 # Nr mínimo de nós interconectados
 
+grauInterf = np.zeros((M,P)) # Medida aproximada do impacto de cada eNodeB sobre a interferência total (aproximada, pois a medida exata é dependente do conjunto de eNodeBs ativadas em cada solução)
+for m in range(0, M):
+    for p in range(0, P):
+        aux = 0
+        for n in range(0, N):
+            aux += Cmnp[m][n][p]
+        grauInterf[m][p] = aux/N
 
 
 ########################
@@ -85,15 +92,6 @@ for n in range(0, N):
     for m in range(0, M):
         for p in range(0, P):
             ct.SetCoefficient(Y[m2a(m, p, P)], int(Cmnp[m][n][p]))
-
-# Restrição (2): Número de usuários por eNodeB deve ser menor ou igual a Usu
-#for m in range(0, M):
-#    ct = solver.Constraint(0, Usu, str(head))
-#    head += 1
-#    for n in range(0, N):
-#        for p in range(0, P):
-            #ct.SetCoefficient(X[n]*Y[m2a(m, p, P)], int(Cmnp[m][n][p]))
-#            ct.SetCoefficient(X[n], int(Cmnp[m][n][p] * Nij[nn[n][0]][nn[n][1]]))
 
 # Restrição (2): Cada quadrícula de cliente Nij só pode ser atendida ou associada a uma eNodeB
 for n in range(0, N):
@@ -166,17 +164,10 @@ for n in range(0, N):
 #            objetivo.SetCoefficient(Y[m2a(m, p, P)], -1 * Cmnp[m][n][p])
 #for n in range(0, N):
 #    objetivo.SetCoefficient(X[n], 1)
-grauInterf = np.zeros((M,P))
-for m in range(0, M):
-    for p in range(0, P):
-        aux = 0
-        for n in range(0, N):
-            aux += Cmnp[m][n][p]
-        grauInterf[m][p] = aux/N
 
 for m in range(0, M):
-    for p in range(0, P):
-        objetivo.SetCoefficient(Y[m2a(m, p, P)], (-10 * grauInterf[m][p]) - 10)
+    for p in range(0, P): #                      interf                 nr_eNodeBs
+        objetivo.SetCoefficient(Y[m2a(m, p, P)], (-20 * grauInterf[m][p]) -50)
 
 
 
@@ -240,7 +231,7 @@ for m in range(M):
     for p in range(P):
         interf += grauInterf[m][p] * sol[m][p]
 
-valorObjetivo = 5 * NrClientesAtendidos - 10 * NrAntenasInstaladas - 10 * interf
+valorObjetivo = 5 * NrClientesAtendidos - 50 * NrAntenasInstaladas - 20 * interf
 
 print("Valor Objetivo = {}".format(valorObjetivo))
 print("Número de Clientes atendidos = %d" % NrClientesAtendidos)

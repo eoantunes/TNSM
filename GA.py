@@ -40,6 +40,14 @@ Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó 
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
 Interc = 1 # Nr mínimo de nós interconectados
 
+grauInterf = np.zeros((M, P))
+for m in range(0, M):
+    for p in range(0, P):
+        aux = 0
+        for n in range(0, N):
+            aux += Cmnp[m][n][p]
+        grauInterf[m][p] = aux / N
+
 ##############################
 # Parâmetros exclusivos do Algorítmo Genético
 # Parâmetros definidos pela técnica de otimização Hyperas
@@ -99,26 +107,24 @@ def fitness(solution, solution_idx):
     cliNaoAtendidos = np.zeros((N))
     for n in range(N):
         cliNaoAtendidos[n] = Nij[nn[n][0]][nn[n][1]]
-
     for m in range(M):
         aux = 0 # Nr de clientes atendidos por eNodeB
         for n in range(N):
             for p in range(P):
                 if aux < Usu and sol[m][p] == 1 and Cmnp[m][n][p] == 1 and cliNaoAtendidos[n] > 0:
+                    cliAux = cliNaoAtendidos[n]
+                    aux1 = aux
                     aux += cliNaoAtendidos[n]
                     cliNaoAtendidos[n] = 0
                     if aux > Usu:
-                        cliNaoAtendidos[n] = aux - Usu
-                        aux = Usu
-
+                        cliNaoAtendidos[n] = cliAux
+                        aux = aux1
     nrTotalClientes = 0
     nrClientesNaoAtendidos = 0
     for n in range(N):
         nrTotalClientes += Nij[nn[n][0]][nn[n][1]]
         nrClientesNaoAtendidos += cliNaoAtendidos[n]
-
     nrClientesAtendidos = nrTotalClientes - nrClientesNaoAtendidos
-
 
     # Minimização da interferência
     #grauInterf = 0
@@ -129,13 +135,6 @@ def fitness(solution, solution_idx):
     #            aux += Cmnp[m][n][p] * sol[m][p]
     #    if aux > 1:
     #        grauInterf += aux
-    grauInterf = np.zeros((M, P))
-    for m in range(0, M):
-        for p in range(0, P):
-            aux = 0
-            for n in range(0, N):
-                aux += Cmnp[m][n][p]
-            grauInterf[m][p] = aux / N
 
     interf = 0
     for m in range(M):
@@ -150,9 +149,9 @@ def fitness(solution, solution_idx):
 
 
     if nr_eNodeBs > Ant: # Punição ampliada para excesso de eNodeBs
-        return (5 * nrClientesAtendidos - 100 * nr_eNodeBs - 10 * interf)
+        return (5 * nrClientesAtendidos - 100 * nr_eNodeBs - 20 * interf)
     else:
-        return (5 * nrClientesAtendidos - 10 * nr_eNodeBs - 10 * interf)
+        return (5 * nrClientesAtendidos - 50 * nr_eNodeBs - 20 * interf)
 
 
 def create_population():
@@ -233,17 +232,22 @@ for i in range(len(crossover_type)):                             # --> mudar o a
 
         for m in range(M):
             aux = 0  # Nr de clientes atendidos por eNodeB
+            pAtiva = None
             quadriculasAtendidas = []
             for n in range(N):
                 for p in range(P):
                     if aux < Usu and sol[m][p] == 1 and Cmnp[m][n][p] == 1 and cliNaoAtendidos[n] > 0:
+                        cliAux = cliNaoAtendidos[n]
+                        aux1 = aux
                         aux += cliNaoAtendidos[n]
                         cliNaoAtendidos[n] = 0
                         quadriculasAtendidas.append(n)
+                        pAtiva = p
                         if aux > Usu:
-                            cliNaoAtendidos[n] = aux - Usu
-                            aux = Usu
-            print("Clientes atendidos pela eNodeB {} = {}".format(m, aux))
+                            cliNaoAtendidos[n] = cliAux
+                            aux = aux1
+
+            print("Clientes atendidos pela eNodeB {} p{} = {}".format(m, pAtiva, aux))
             if aux != 0:
                 print("Quadrículas antendidas: {}".format(quadriculasAtendidas))
                 print("Clientes NÃO atendidos: {}".format(cliNaoAtendidos))
@@ -257,14 +261,19 @@ for i in range(len(crossover_type)):                             # --> mudar o a
         nrClientesAtendidos = nrTotalClientes - nrClientesNaoAtendidos
 
         # Minimização da interferência
-        grauInterf = 0
+        gInterf = 0
         for n in range(N):
             aux = 0  # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
             for m in range(M):
                 for p in range(P):
                     aux += Cmnp[m][n][p] * sol[m][p]
             if aux > 1:
-                grauInterf += aux
+                gInterf += aux
+
+        interf = 0
+        for m in range(M):
+            for p in range(P):
+                interf += grauInterf[m][p] * sol[m][p]
 
         # Minimização do número de eNodeBs instaladas
         nr_eNodeBs = 0
@@ -277,7 +286,8 @@ for i in range(len(crossover_type)):                             # --> mudar o a
 
         print("Número de clientes atendidos = {}".format(nrClientesAtendidos))
         print("Número de eNodeBs instalados = {}".format(nr_eNodeBs))
-        print("Grau de interferência = {}".format(grauInterf))
+        print("Grau de interferência = {}".format(gInterf))
+        print("Interferência = {}".format(interf))
         print("Bestfitness = {}".format(ga_instance.best_solution()[1]))
 
 
