@@ -48,7 +48,7 @@ population_size = 100                           # hyperopt[10 a 200]
 crossover_probability = 0.7719049380928529      # hyperopt[0.1 a 1 ]
 mutation_probability = 0.7861998735112282        # hyperopt[10 a 100]       # valores em %, ou seja, >= 0 e <=100
 parents = 8                                     # hyperopt[2  a 20 ]       # Número de pais a serem selecionados
-#elitism = -1                                     # hyperopt[1  a  2 ]
+elitism = -1                                     # hyperopt[1  a  2 ]
 
 
 ##########   FATORES DA AVALIAÇÃO   ##########
@@ -172,7 +172,7 @@ def callback_generation(ga_instance):     #CallBack para acessar as informaçõe
     y[i_global][ga_instance.generations_completed - 1] += (best_fitness)/iteracoes
 
 ########################################################################################
-iteracoes = 5    ######################################################################
+iteracoes = 1    ######################################################################
 ########################################################################################
 lastBestfitness = 0
 i_global = 0    # variável que controla a mudança dos fatores (métodos de seleção, métodos de crossover e de mutação)
@@ -206,7 +206,7 @@ for i in range(len(crossover_type)):                             # --> mudar o a
                                gene_type=int,
                                parent_selection_type=parent_selection_type,         # --> mudar o array para avaliar outro fator
                                K_tournament=parents,
-                               #keep_parents=elitism,
+                               keep_parents=elitism,
                                crossover_type=crossover_type[i],                    # --> mudar o array para avaliar outro fator
                                crossover_probability=crossover_probability,
                                mutation_type=mutation_type,                         # --> mudar o array para avaliar outro fator
@@ -292,6 +292,7 @@ for i in range(len(crossover_type)):                             # --> mudar o a
 #plt.plot(x, y[3], label='M-ALLOCATOR-Tr')
 #plt.plot(x, y[4], label='M-ALLOCATOR-A')
 #plt.plot(x, y[5], label='M-ALLOCATOR-To')
+plt.plot(x, np.ones(len(x)) * 954.5945945945946, 'b--', label='E_ALLOCATOR')
 plt.plot(x, y[0], label='M-ALLOCATOR-PS')
 plt.plot(x, y[1], label='M-ALLOCATOR-DP')
 plt.plot(x, y[2], label='M-ALLOCATOR-U')
