@@ -155,9 +155,9 @@ for n in range(0, N):
     objetivo.SetCoefficient(X[n], int(5 * Nij[nn[n][0]][nn[n][1]]))
 
 # Minimização do número de eNodeBs empregadas
-for m in range (0, M):
-    for p in range(0, P):
-        objetivo.SetCoefficient(Y[m2a(m, p, P)], -10)
+#for m in range (0, M):
+#    for p in range(0, P):
+#        objetivo.SetCoefficient(Y[m2a(m, p, P)], -10)
 
 # Minimização do grau de interferência
 #for m in range(0, M):
@@ -166,15 +166,18 @@ for m in range (0, M):
 #            objetivo.SetCoefficient(Y[m2a(m, p, P)], -1 * Cmnp[m][n][p])
 #for n in range(0, N):
 #    objetivo.SetCoefficient(X[n], 1)
+grauInterf = np.zeros((M,P))
+for m in range(0, M):
+    for p in range(0, P):
+        aux = 0
+        for n in range(0, N):
+            aux += Cmnp[m][n][p]
+        grauInterf[m][p] = aux/N
 
-#grauInterf = 0
-#for n in range(N):
-#    aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
-#    for m in range(M):
-#        for p in range(P):
-#            aux += Cmnp[m][n][p] * Y[m2a(m, p, P)]
-#    if aux > 1:
-#        grauInterf += aux
+for m in range(0, M):
+    for p in range(0, P):
+        objetivo.SetCoefficient(Y[m2a(m, p, P)], (-10 * grauInterf[m][p]) - 10)
+
 
 
 objetivo.SetMaximization()
@@ -232,17 +235,14 @@ print("Tempo de processamento = %f" % (solver.wall_time()/1000))
 ###################################################
 # Avaliando a solução e armazenando suas métricas #
 ###################################################
-grauInterf = 0
-for n in range(N):
-    aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
-    for m in range(M):
-        for p in range(P):
-            aux += Cmnp[m][n][p] * sol[m][p]
-    if aux > 1:
-        grauInterf += aux
-valorObjetivo = 5 * NrClientesAtendidos - 10 * NrAntenasInstaladas - grauInterf
+interf = 0
+for m in range(M):
+    for p in range(P):
+        interf += grauInterf[m][p] * sol[m][p]
+
+valorObjetivo = 5 * NrClientesAtendidos - 10 * NrAntenasInstaladas - 10 * interf
 
 print("Valor Objetivo = {}".format(valorObjetivo))
 print("Número de Clientes atendidos = %d" % NrClientesAtendidos)
 print("Número de eNodeBs instaladas = %d" % NrAntenasInstaladas)
-print("Grau de interferência = %d" % grauInterf)
+print("Grau de interferência = %f" % interf)

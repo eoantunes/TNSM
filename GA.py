@@ -121,14 +121,26 @@ def fitness(solution, solution_idx):
 
 
     # Minimização da interferência
-    grauInterf = 0
-    for n in range(N):
-        aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
-        for m in range(M):
-            for p in range(P):
-                aux += Cmnp[m][n][p] * sol[m][p]
-        if aux > 1:
-            grauInterf += aux
+    #grauInterf = 0
+    #for n in range(N):
+    #    aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
+    #    for m in range(M):
+    #        for p in range(P):
+    #            aux += Cmnp[m][n][p] * sol[m][p]
+    #    if aux > 1:
+    #        grauInterf += aux
+    grauInterf = np.zeros((M, P))
+    for m in range(0, M):
+        for p in range(0, P):
+            aux = 0
+            for n in range(0, N):
+                aux += Cmnp[m][n][p]
+            grauInterf[m][p] = aux / N
+
+    interf = 0
+    for m in range(M):
+        for p in range(P):
+            interf += grauInterf[m][p] * sol[m][p]
 
     # Minimização do número de eNodeBs instaladas
     nr_eNodeBs = 0
@@ -138,9 +150,9 @@ def fitness(solution, solution_idx):
 
 
     if nr_eNodeBs > Ant: # Punição ampliada para excesso de eNodeBs
-        return (5 * nrClientesAtendidos - 100 * nr_eNodeBs - grauInterf)
+        return (5 * nrClientesAtendidos - 100 * nr_eNodeBs - 10 * interf)
     else:
-        return (5 * nrClientesAtendidos - 10 * nr_eNodeBs - grauInterf)
+        return (5 * nrClientesAtendidos - 10 * nr_eNodeBs - 10 * interf)
 
 
 def create_population():
