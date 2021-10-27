@@ -7,16 +7,16 @@ import matplotlib.pyplot as plt
 ###   Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
 I,J = 12,15
 
-Mij = np.loadtxt('matriz_M{}{}.txt'.format(I,J))
+Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J))
 Nij = np.loadtxt('matriz_N{}{}.txt'.format(I,J))
 
-loaded_Smnp = np.loadtxt('matriz_Smnp{}{}.txt'.format(I,J))
+loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
 Smnp = loaded_Smnp.reshape(loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5)
 
-loaded_Cmnp = np.loadtxt('matriz_Cmnp{}{}.txt'.format(I,J))
+loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
 Cmnp = loaded_Cmnp.reshape(loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
 
-loaded_A = np.loadtxt('matriz_A{}{}.txt'.format(I,J))
+loaded_A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
 A = loaded_A.reshape(loaded_A.shape[0], loaded_A.shape[0], 5, 5)
 
 # Tuplas das quadrículas aptas a receber um eNodeB
@@ -302,7 +302,7 @@ for i in range(len(crossover_type)):                             # --> mudar o a
 #plt.plot(x, y[3], label='M-ALLOCATOR-Tr')
 #plt.plot(x, y[4], label='M-ALLOCATOR-A')
 #plt.plot(x, y[5], label='M-ALLOCATOR-To')
-plt.plot(x, np.ones(len(x)) * 954.5945945945946, 'b--', label='E_ALLOCATOR')
+plt.plot(x, np.ones(len(x)) * 880, 'b--', label='E_ALLOCATOR')
 plt.plot(x, y[0], label='M-ALLOCATOR-PS')
 plt.plot(x, y[1], label='M-ALLOCATOR-DP')
 plt.plot(x, y[2], label='M-ALLOCATOR-U')

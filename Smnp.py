@@ -4,12 +4,12 @@ import math
 
 ###   Para gerar uma nova matriz basta editar os valores I e J abaixo
 ###   Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
-I,J = 12,15
+I,J = 108,135
 
 pTx = [20,25,30,35,40] # Potências de Tx avaliadas
 
-Mij = np.loadtxt('matriz_M{}{}.txt'.format(I,J))
-Nij = np.loadtxt('matriz_N{}{}.txt'.format(I,J))
+Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J))
+Nij = np.loadtxt('matriz/N{}{}.txt'.format(I,J))
 
 # m e n são tuplas dos índices das quadrículas que precisam ser iteradas para gerar a matriz Smnp
 m = []
@@ -194,24 +194,24 @@ for i in range(len(m)):
 
 #####   Salva em ARQUIVO para outras análises   #####
 Smnp_reshaped = Smnp.reshape(Smnp.shape[0], -1)
-np.savetxt("matriz_Smnp{}{}.txt".format(I,J), Smnp_reshaped, fmt="%d")
+np.savetxt("matriz/Smnp{}{}.txt".format(I,J), Smnp_reshaped, fmt="%d")
 
 Cmnp_reshaped = Cmnp.reshape(Cmnp.shape[0], -1)
-np.savetxt("matriz_Cmnp{}{}.txt".format(I,J), Cmnp_reshaped, fmt="%d")
+np.savetxt("matriz/Cmnp{}{}.txt".format(I,J), Cmnp_reshaped, fmt="%d")
 
 A_reshaped = A.reshape(A.shape[0], -1)
-np.savetxt("matriz_A{}{}.txt".format(I,J), A_reshaped, fmt="%d")
+np.savetxt("matriz/A{}{}.txt".format(I,J), A_reshaped, fmt="%d")
 
 #####   Carga do arquivo   #####
-loaded_Smnp = np.loadtxt('matriz_Smnp{}{}.txt'.format(I,J))
+loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
 load_original_Smnp = loaded_Smnp.reshape(
     loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5) # 5 é o shape da terceira dimensão da matriz Smnp
 
-loaded_Cmnp = np.loadtxt('matriz_Cmnp{}{}.txt'.format(I,J))
+loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
 load_original_Cmnp = loaded_Cmnp.reshape(
     loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
 
-loaded_A = np.loadtxt('matriz_A{}{}.txt'.format(I,J))
+loaded_A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
 load_original_A = loaded_A.reshape(
     loaded_A.shape[0], loaded_A.shape[0], 5, 5)
 

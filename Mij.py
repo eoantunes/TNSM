@@ -3,7 +3,7 @@ import numpy as np
 
 ###   Para gerar uma nova matriz basta editar os valores I e J abaixo
 ###   Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
-I,J = 12,15
+I,J = 108,135
 
 image = Image.open("brumadinho_1350x1080pb.png")
 imagePB = image.convert(mode="L")
@@ -29,4 +29,4 @@ for i in range(II):
 
 #####   Salva em ARQUIVO para outras análises   #####
 Mij = np.asarray(Mij)
-np.savetxt('matriz_M{}{}.txt'.format(I,J), Mij, fmt="%d")
+np.savetxt('matriz/M{}{}.txt'.format(I,J), Mij, fmt="%d")
