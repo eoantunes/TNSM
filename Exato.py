@@ -143,14 +143,14 @@ objetivo = solver.Objective()
 
 # Maximização do número de clientes atendidos ou cobertura
 for n in range(0, N):
-    objetivo.SetCoefficient(X[n], int(5 * Nij[nn[n][0]][nn[n][1]]))
+    objetivo.SetCoefficient(X[n], Nij[nn[n][0]][nn[n][1]]/200)  # peso definido pela análise da curva de Paretto
 
 # Minimização do número de eNodeBs empregadas
 #                   e
 # Minimização do grau de interferência
 for m in range(0, M):
     for p in range(0, P): #                      interf                 nr_eNodeBs
-        objetivo.SetCoefficient(Y[m2a(m, p, P)], (-20 * grauInterf[m][p]) -50)
+        objetivo.SetCoefficient(Y[m2a(m, p, P)], (-1/9 * grauInterf[m][p]) -1/9)
 
 objetivo.SetMaximization()
 solver.Solve()

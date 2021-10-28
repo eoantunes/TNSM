@@ -159,12 +159,12 @@ def fitness(solution, solution_idx):
     nr_eNodeBs_isOK = True
     if nr_eNodeBs > Ant:
         nr_eNodeBs_isOK = False
-
-    fit = 5 * nrClientesAtendidos - 50 * nr_eNodeBs - 20 * interf
+# incluir heurística para comparação (sugestão prof. Marotta: centróides)
+    fit = nrClientesAtendidos/200 - 1/9 * nr_eNodeBs - 1/9 * interf
     if not interconectado: # Punição para o não atendimento à taxa de interconexão
-        fit -= 500
+        fit -= 10
     if not nr_eNodeBs_isOK: # Punição para o excesso de eNodeBs
-        fit -= 50 * nr_eNodeBs
+        fit -= nr_eNodeBs
     return fit
 
 
