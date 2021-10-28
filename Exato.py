@@ -16,20 +16,14 @@ solver = pywraplp.Solver("Exato", pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
 # Parametrização #
 ##################
 
-#####################
-###   Matrizes    ###
-#####################
+# Matrizes
 Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J))
 Nij = np.loadtxt('matriz/N{}{}.txt'.format(I,J))
-
 loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
 Smnp = loaded_Smnp.reshape(loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5)
-
 loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
 Cmnp = loaded_Cmnp.reshape(loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
-
-loaded_A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
-A = loaded_A.reshape(loaded_A.shape[0], loaded_A.shape[0], 5, 5)
+A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
 
 # Tuplas dos índices das quadrículas aptas a receber um eNodeB
 mm = []
@@ -44,13 +38,12 @@ for i in range(len(Nij)):
         if Nij[i][j] != 0:
             nn.append((i,j))
 
-##############################
 M = Smnp.shape[0]  # Nr de pontos de demanda
 N = Smnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
 P = Smnp.shape[2]  # Nr de potências sendo avaliadas
 Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó de acesso + 1 Centro de Coordenação)
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
-Interc = 1 # Nr mínimo de nós interconectados
+Interc = 3 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)
 
 grauInterf = np.zeros((M,P)) # Medida aproximada do impacto de cada eNodeB sobre a interferência total (aproximada, pois a medida exata é dependente do conjunto de eNodeBs ativadas em cada solução)
 for m in range(0, M):
@@ -128,14 +121,13 @@ for m in range(0, M):
 head += 1
 
 # Restrição (6): Número mínimo de antenas interconectadas - ROA 65 (Não implementado no GA)
-#for m in range(0, M):
-#    for p in range(0, P):
-#        ct = solver.Constraint(Interc, Ant, str(head))
-#        ct.SetCoefficient(Y[m2a(m, p, P)], -1)
-#        head += 1
-#        for k in range(0, M):
-#            for z in range(0, P):
-#                ct.SetCoefficient(Y[m2a(k, z, P)], int(A[m][k][p][z]))
+for m in range(0, M):
+    for p in range(0, P):
+        ct = solver.Constraint(Interc, Ant, str(head))
+        ct.SetCoefficient(Y[m2a(m, p, P)], -1)
+        head += 1
+        for k in range(0, M):
+            ct.SetCoefficient(Y[m2a(k, 4, P)], int(A[m][k]))
 
 # Restrição (7): Uma eNodeB só pode ter uma potência de transmissão (pTx) ativada
 for m in range(0, M):
@@ -223,6 +215,9 @@ valorObjetivo = 5 * NrClientesAtendidos - 50 * NrAntenasInstaladas - 20 * interf
 
 if (objetivo.Value() == valorObjetivo):
     print("O Valor Objetivo avaliado é idêntico ao retornado pelo solver = {}".format(valorObjetivo))
+else:
+    print("Valor objetivo (solver) = {}".format(objetivo.Value()))
+    print("Valor objetivo (cálculo) = {}".format(valorObjetivo))
 print("Grau de interferência = %f" % interf)
 
 ###############################################################################

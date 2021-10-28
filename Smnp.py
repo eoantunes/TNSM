@@ -4,7 +4,7 @@ import math
 
 ###   Para gerar uma nova matriz basta editar os valores I e J abaixo
 ###   Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
-I,J = 108,135
+I,J = 12,15
 
 pTx = [20,25,30,35,40] # Potências de Tx avaliadas
 
@@ -122,7 +122,7 @@ for i in range(len(m)):
 
 
 ###   Geração da matriz de conectividade A entre eNoodeBs
-A = np.zeros((len(m), len(m), len(pTx), len(pTx))) # Shape (m1,m2,p1,p2)
+A = np.zeros((len(m), len(m))) # Shape (m1,m2)
 for i in range(len(m)):
     for j in range(len(m)):
         dist = d.GeodesicDistance(Cij[m[i][0]][m[i][1]],Cij[m[j][0]][m[j][1]]).km
@@ -167,22 +167,9 @@ for i in range(len(m)):
                 PL = 161.04 - 7.1 * math.log10(W) + 7.5 * math.log10(h) - (24.37 - 3.7 * (h/hBS)**2) * math.log10(hBS) + (43.42 - 3.1 * math.log10(hBS)) * (math.log10(dist*1000) - 3) + 20 * math.log10(fc/1000) - (3.2 * (math.log10(11.75 * hUT))**2 - 4.97)
                 ShF = np.random.normal(0, 8.)  # normal(media, desviopradrao)
 
-        for k in range(len(pTx)):
-            for l in range(len(pTx)):
-                # pRx = pTx + GeNB + GRx - PL - ShF --> pRx = pTx[k] + 13 - PL - ShF
-                pRx = 0
-                pRx = pTx[k] + 13 - PL - ShF
-                if (pRx > -80):
-                    A[i][j][k][l] = 1
-                    print("***   Peso 3   *** pRx: {}".format(pRx))
-                elif (pRx > -90):
-                    A[i][j][k][l] = 1
-                    print("***   Peso 2   *** pRx: {}".format(pRx))
-                elif (pRx > -100):
-                    A[i][j][k][l] = 1
-                    print("***   Peso 1   *** pRx: {}".format(pRx))
-                else:
-                    print("***   Peso 0   *** pRx: {}".format(pRx))
+        pRx = pTx[4] + 13 - PL - ShF # Para a matriz de interconecções A foi considerado apenas a pTx máxima
+        if (pRx > -100):
+            A[i][j] = 1
 
         if LOS == True:
             print("LOS: d={}, PL={}, ShF={}".format(dist, PL, ShF))
@@ -199,8 +186,9 @@ np.savetxt("matriz/Smnp{}{}.txt".format(I,J), Smnp_reshaped, fmt="%d")
 Cmnp_reshaped = Cmnp.reshape(Cmnp.shape[0], -1)
 np.savetxt("matriz/Cmnp{}{}.txt".format(I,J), Cmnp_reshaped, fmt="%d")
 
-A_reshaped = A.reshape(A.shape[0], -1)
-np.savetxt("matriz/A{}{}.txt".format(I,J), A_reshaped, fmt="%d")
+#A_reshaped = A.reshape(A.shape[0], -1)
+A = np.asarray(A)
+np.savetxt("matriz/A{}{}.txt".format(I,J), A, fmt="%d")
 
 #####   Carga do arquivo   #####
 loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
@@ -210,10 +198,6 @@ load_original_Smnp = loaded_Smnp.reshape(
 loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
 load_original_Cmnp = loaded_Cmnp.reshape(
     loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
-
-loaded_A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
-load_original_A = loaded_A.reshape(
-    loaded_A.shape[0], loaded_A.shape[0], 5, 5)
 
 # testes
 print("Testes da matriz Smnp:")
@@ -229,15 +213,6 @@ print("Testes da matriz Cmnp:")
 print("shape do Smnp origem: ", Cmnp.shape)
 print("shape da matriz carregada do arquivo: ", load_original_Cmnp.shape)
 if (load_original_Cmnp == Cmnp).all():
-    print("Ok, as duas matrizes são idênticas!")
-else:
-    print("Erro, as matrizes são diferentes.")
-
-print()
-print("Testes da matriz A:")
-print("shape do A origem: ", A.shape)
-print("shape da matriz carregada do arquivo: ", load_original_A.shape)
-if (load_original_A == A).all():
     print("Ok, as duas matrizes são idênticas!")
 else:
     print("Erro, as matrizes são diferentes.")

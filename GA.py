@@ -8,16 +8,12 @@ import matplotlib.pyplot as plt
 I,J = 12,15
 
 Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J))
-Nij = np.loadtxt('matriz_N{}{}.txt'.format(I,J))
-
+Nij = np.loadtxt('matriz/N{}{}.txt'.format(I,J))
 loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
 Smnp = loaded_Smnp.reshape(loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5)
-
 loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
 Cmnp = loaded_Cmnp.reshape(loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
-
-loaded_A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
-A = loaded_A.reshape(loaded_A.shape[0], loaded_A.shape[0], 5, 5)
+A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
 
 # Tuplas das quadrículas aptas a receber um eNodeB
 mm = []
@@ -38,7 +34,7 @@ N = Smnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
 P = Smnp.shape[2]  # Nr de potências sendo avaliadas
 Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó de acesso + 1 Centro de Coordenação)
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
-Interc = 1 # Nr mínimo de nós interconectados
+Interc = 3 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)
 
 grauInterf = np.zeros((M, P))
 for m in range(0, M):
@@ -147,11 +143,29 @@ def fitness(solution, solution_idx):
         for p in range(P):
             nr_eNodeBs += sol[m][p]
 
+    # Garantia da taxa de interconexão
+    interconectado = True
+    for m in range(M):
+        for p in range(P):
+            grauInterc = 0
+            if sol[m][p] == 1:
+                for k in range(M):
+                    for l in range(P):
+                        grauInterc += sol[k][l] * A[m][k]
+                if grauInterc < (Interc+1):
+                    interconectado = False
 
-    if nr_eNodeBs > Ant: # Punição ampliada para excesso de eNodeBs
-        return (5 * nrClientesAtendidos - 100 * nr_eNodeBs - 20 * interf)
-    else:
-        return (5 * nrClientesAtendidos - 50 * nr_eNodeBs - 20 * interf)
+    # Garantia do número máximo de eNodeBs
+    nr_eNodeBs_isOK = True
+    if nr_eNodeBs > Ant:
+        nr_eNodeBs_isOK = False
+
+    fit = 5 * nrClientesAtendidos - 50 * nr_eNodeBs - 20 * interf
+    if not interconectado: # Punição para o não atendimento à taxa de interconexão
+        fit -= 500
+    if not nr_eNodeBs_isOK: # Punição para o excesso de eNodeBs
+        fit -= 50 * nr_eNodeBs
+    return fit
 
 
 def create_population():
@@ -302,7 +316,7 @@ for i in range(len(crossover_type)):                             # --> mudar o a
 #plt.plot(x, y[3], label='M-ALLOCATOR-Tr')
 #plt.plot(x, y[4], label='M-ALLOCATOR-A')
 #plt.plot(x, y[5], label='M-ALLOCATOR-To')
-plt.plot(x, np.ones(len(x)) * 880, 'b--', label='E_ALLOCATOR')
+plt.plot(x, np.ones(len(x)) * 749.729, 'b--', label='E_ALLOCATOR')
 plt.plot(x, y[0], label='M-ALLOCATOR-PS')
 plt.plot(x, y[1], label='M-ALLOCATOR-DP')
 plt.plot(x, y[2], label='M-ALLOCATOR-U')
