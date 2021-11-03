@@ -43,7 +43,8 @@ N = Smnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
 P = Smnp.shape[2]  # Nr de potências sendo avaliadas
 Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó de acesso + 1 Centro de Coordenação)
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
-Interc = 3 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)
+Interc = 1 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)
+consensoCobertura = 0.95 # Porcentagem do número de clientes que devem ser atendidos
 
 grauInterf = np.zeros((M,P)) # Medida aproximada do impacto de cada eNodeB sobre a interferência total (aproximada, pois a medida exata é dependente do conjunto de eNodeBs ativadas em cada solução)
 for m in range(0, M):
@@ -79,7 +80,7 @@ head = 0
 
 # Restrição (1):  Somatório (mEM) Somatório (pEP) ymp.cmnp >= xn para todo nEN
 #                 Somatório (mEM) Somatório (pEP) ymp.cmnp - xn >= 0 para todo nEN
-# Para que um cliente seja atendido (Xn = 1), ao menos uma antena que lhe dê cobertura deve ser instalada
+# Para que um cliente seja atendido (Xn = 1), ao menos um eNodeB que lhe dê cobertura deve ser instalado
 for n in range(0, N):
     ct = solver.Constraint(0, Ant, str(head))
     ct.SetCoefficient(X[n], -1)
@@ -88,7 +89,7 @@ for n in range(0, N):
         for p in range(0, P):
             ct.SetCoefficient(Y[m2a(m, p, P)], int(Cmnp[m][n][p]))
 
-# Restrição (2): Cada quadrícula de cliente Nij só pode ser atendida ou associada a uma eNodeB
+# Restrição (2): Cada quadrícula de cliente Nij só pode ser atendida ou associada a um eNodeB
 for n in range(0, N):
     ct = solver.Constraint(0, 0, str(head))
     ct.SetCoefficient(X[n], -1)
@@ -113,7 +114,7 @@ for m in range(0, M):
     for p in range(0, P):
         ct.SetCoefficient(Y[m2a(m, p, P)], -250)
 
-# Restrição (5): Número máximo de antenas instaladas ==> Somatório (mEM) Somatório (pEP) ymp <= Ant
+# Restrição (5): Número máximo de eNodeBs instalados ==> Somatório (mEM) Somatório (pEP) ymp <= Ant
 ct = solver.Constraint(Interc, Ant, str(head))
 for m in range(0, M):
     for p in range(0, P):
@@ -127,7 +128,8 @@ for m in range(0, M):
         ct.SetCoefficient(Y[m2a(m, p, P)], -1)
         head += 1
         for k in range(0, M):
-            ct.SetCoefficient(Y[m2a(k, 4, P)], int(A[m][k]))
+            for l in range(0, P):
+                ct.SetCoefficient(Y[m2a(k, l, P)], int(A[m][k]))
 
 # Restrição (7): Uma eNodeB só pode ter uma potência de transmissão (pTx) ativada
 for m in range(0, M):
@@ -136,21 +138,35 @@ for m in range(0, M):
     for p in range(0, P):
         ct.SetCoefficient(Y[m2a(m, p, P)], 1)
 
+# Restrição da Maximização da Área de Cobertura
+ct = solver.Constraint(consensoCobertura, 1, str(head))
+head += 1
+for n in range(0,N):
+    ct.SetCoefficient(X[n], Nij[nn[n][0]][nn[n][1]]/200)
+
+#ct = solver.Constraint(-0.99 ,-0.1 ,str(head))
+#head += 1
+#for n in range(0,N):
+#    ct.SetCoefficient(Y[m2a(m, p, P)], - 1/9)
+
 ###################
 # Função objetivo #
 ###################
 objetivo = solver.Objective()
 
 # Maximização do número de clientes atendidos ou cobertura
-for n in range(0, N):
-    objetivo.SetCoefficient(X[n], Nij[nn[n][0]][nn[n][1]]/200)  # peso definido pela análise da curva de Paretto
+#for n in range(0, N):
+#   objetivo.SetCoefficient(X[n], Nij[nn[n][0]][nn[n][1]]/200)  # peso definido pela análise da curva de Paretto
 
 # Minimização do número de eNodeBs empregadas
 #                   e
 # Minimização do grau de interferência
 for m in range(0, M):
     for p in range(0, P): #                      interf                 nr_eNodeBs
-        objetivo.SetCoefficient(Y[m2a(m, p, P)], (-1/9 * grauInterf[m][p]) -1/9)
+        #objetivo.SetCoefficient(Y[m2a(m, p, P)], (-1/9 * grauInterf[m][p]) -1/9)
+        objetivo.SetCoefficient(Y[m2a(m, p, P)], -1/8 * grauInterf[m][p] )
+        #objetivo.SetCoefficient(Y[m2a(m, p, P)], - 1/9)
+
 
 objetivo.SetMaximization()
 solver.Solve()
@@ -211,7 +227,8 @@ for m in range(M):
     for p in range(P):
         interf += grauInterf[m][p] * sol[m][p]
 
-valorObjetivo = 5 * NrClientesAtendidos - 50 * NrAntenasInstaladas - 20 * interf
+#valorObjetivo = NrClientesAtendidos/200 - 1/9 * NrAntenasInstaladas - 1/8 * interf
+valorObjetivo = - 1/8 * interf
 
 if (objetivo.Value() == valorObjetivo):
     print("O Valor Objetivo avaliado é idêntico ao retornado pelo solver = {}".format(valorObjetivo))

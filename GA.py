@@ -34,9 +34,10 @@ N = Smnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
 P = Smnp.shape[2]  # Nr de potências sendo avaliadas
 Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó de acesso + 1 Centro de Coordenação)
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
-Interc = 3 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)
+Interc = 1 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)(0, 1, 2, 3)
+consensoCobertura = 0.95 # Porcentagem do número de clientes que devem ser atendidos (0.8, 0.9, 0.95, 0.98, 1)
 
-grauInterf = np.zeros((M, P))
+grauInterf = np.zeros((M, P)) # Medida aproximada do impacto de cada eNodeB sobre a interferência total (aproximada, pois a medida exata é dependente do conjunto de eNodeBs ativadas em cada solução)
 for m in range(0, M):
     for p in range(0, P):
         aux = 0
@@ -47,12 +48,12 @@ for m in range(0, M):
 ##############################
 # Parâmetros exclusivos do Algorítmo Genético
 # Parâmetros definidos pela técnica de otimização Hyperas
-generations = 78                                # hyperopt[10 a 100]
-population_size = 100                           # hyperopt[10 a 200]
-crossover_probability = 0.7719049380928529      # hyperopt[0.1 a 1 ]
-mutation_probability = 0.7861998735112282        # hyperopt[10 a 100]       # valores em %, ou seja, >= 0 e <=100
-parents = 8                                     # hyperopt[2  a 20 ]       # Número de pais a serem selecionados
-elitism = 1                                     # hyperopt[1  a  2 ]
+generations = 60                                # hyperopt[10 a 100]
+population_size = 90                            # hyperopt[10 a 200]
+crossover_probability = 0.7822617332190482      # hyperopt[0.1 a 1 ]
+mutation_probability = 0.8697451566145131       # hyperopt[0.1 a 1 ]
+parents = 16                                    # hyperopt[2  a 20 ]       # Número de pais a serem selecionados
+elitism = 2                                     # hyperopt[1  a  2 ]
 
 
 ##########   FATORES DA AVALIAÇÃO   ##########
@@ -75,7 +76,7 @@ two_points (for two points crossover),      <- (dois pontos)
 uniform (for uniform crossover),            <- (uniforme)
 scattered (for scattered crossover).        <- (espalhamento)
 """
-crossover_type = "single_point"
+crossover_type = "two_points"
 
 
 # Métodos de Mutação (mutation_type):
@@ -86,7 +87,7 @@ inversion (for inversion mutation),         <- (inversão)
 scramble (for scramble mutation),           <- (embaralhamento)
 adaptive (for adaptive mutation).           <- (adaptativo)
 """
-mutation_type = "inversion"
+mutation_type = "scramble"
 
 # Cria um indivíduo aleatoriamente
 def individual():
@@ -123,15 +124,6 @@ def fitness(solution, solution_idx):
     nrClientesAtendidos = nrTotalClientes - nrClientesNaoAtendidos
 
     # Minimização da interferência
-    #grauInterf = 0
-    #for n in range(N):
-    #    aux = 0 # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
-    #    for m in range(M):
-    #        for p in range(P):
-    #            aux += Cmnp[m][n][p] * sol[m][p]
-    #    if aux > 1:
-    #        grauInterf += aux
-
     interf = 0
     for m in range(M):
         for p in range(P):
@@ -143,7 +135,7 @@ def fitness(solution, solution_idx):
         for p in range(P):
             nr_eNodeBs += sol[m][p]
 
-    # Garantia da taxa de interconexão
+    # Restrição (6): Taxa de interconexão
     interconectado = True
     for m in range(M):
         for p in range(P):
@@ -155,17 +147,26 @@ def fitness(solution, solution_idx):
                 if grauInterc < (Interc+1):
                     interconectado = False
 
-    # Garantia do número máximo de eNodeBs
+    # Restrição (5): Número máximo de eNodeBs instaladas
     nr_eNodeBs_isOK = True
     if nr_eNodeBs > Ant:
         nr_eNodeBs_isOK = False
-# incluir heurística para comparação (sugestão prof. Marotta: centróides)
-    fit = nrClientesAtendidos/200 - 1/9 * nr_eNodeBs - 1/9 * interf
+
+    # Restrição da Maximização da Área de Cobertura
+    nr_clientes_isOK = True
+    if nrClientesAtendidos < consensoCobertura * nrTotalClientes:
+        nr_clientes_isOK = False
+
+    fit = -1/8 * interf
     if not interconectado: # Punição para o não atendimento à taxa de interconexão
         fit -= 10
     if not nr_eNodeBs_isOK: # Punição para o excesso de eNodeBs
         fit -= nr_eNodeBs
+    if not nr_clientes_isOK: # Punição para o não atendimento do consenso de cobertura
+        fit -= 10
+
     return fit
+
 
 
 def create_population():
@@ -185,7 +186,7 @@ def callback_generation(ga_instance):     #CallBack para acessar as informaçõe
     y[i_global][ga_instance.generations_completed - 1] += (best_fitness)/iteracoes
 
 ########################################################################################
-iteracoes = 1    ######################################################################
+iteracoes = 100    ######################################################################
 ########################################################################################
 lastBestfitness = 0
 i_global = 0    # variável que controla a mudança dos fatores (métodos de seleção, métodos de crossover e de mutação)
@@ -232,7 +233,6 @@ for i in range(len(crossover_type)):                             # --> mudar o a
         yBFit[it][i_global] = ga_instance.best_solution()[1]
         ###   TESTES   ###
         sol = ga_instance.best_solution()[0].reshape(M,P)
-        #print(sol)
 
 
 
@@ -260,11 +260,10 @@ for i in range(len(crossover_type)):                             # --> mudar o a
                         if aux > Usu:
                             cliNaoAtendidos[n] = cliAux
                             aux = aux1
-
-            print("Clientes atendidos pela eNodeB {} p{} = {}".format(m, pAtiva, aux))
             if aux != 0:
-                print("Quadrículas antendidas: {}".format(quadriculasAtendidas))
-                print("Clientes NÃO atendidos: {}".format(cliNaoAtendidos))
+                print("Clientes atendidos pela eNodeB [{},{}] = {}".format(m, pAtiva, aux))
+                #print("Quadrículas antendidas: {}".format(quadriculasAtendidas))
+                #print("Clientes NÃO atendidos: {}".format(cliNaoAtendidos))
 
         nrTotalClientes = 0
         nrClientesNaoAtendidos = 0
@@ -275,15 +274,6 @@ for i in range(len(crossover_type)):                             # --> mudar o a
         nrClientesAtendidos = nrTotalClientes - nrClientesNaoAtendidos
 
         # Minimização da interferência
-        gInterf = 0
-        for n in range(N):
-            aux = 0  # Nr eNodeBs que estão atendendo a quadrícula de clientes Nij
-            for m in range(M):
-                for p in range(P):
-                    aux += Cmnp[m][n][p] * sol[m][p]
-            if aux > 1:
-                gInterf += aux
-
         interf = 0
         for m in range(M):
             for p in range(P):
@@ -299,8 +289,14 @@ for i in range(len(crossover_type)):                             # --> mudar o a
 
 
         print("Número de clientes atendidos = {}".format(nrClientesAtendidos))
+        print()
+        print("eNodeBs instaladas / grau de interferência: ")
+        for m in range(M):
+            for p in range(P):
+                if sol[m][p] == 1:
+                    print("Y[{}][{}] / {}".format(m,p,grauInterf[m][p]))
+        print()
         print("Número de eNodeBs instalados = {}".format(nr_eNodeBs))
-        print("Grau de interferência = {}".format(gInterf))
         print("Interferência = {}".format(interf))
         print("Bestfitness = {}".format(ga_instance.best_solution()[1]))
 
@@ -310,20 +306,11 @@ for i in range(len(crossover_type)):                             # --> mudar o a
 ###########################
 
 #####     GRÁFICO DE CONVERGÊNCIA     #####
-#plt.plot(x, y[0], label='M-ALLOCATOR-EE')
-#plt.plot(x, y[1], label='M-ALLOCATOR-R')
-#plt.plot(x, y[2], label='M-ALLOCATOR-E')
-#plt.plot(x, y[3], label='M-ALLOCATOR-Tr')
-#plt.plot(x, y[4], label='M-ALLOCATOR-A')
-#plt.plot(x, y[5], label='M-ALLOCATOR-To')
-plt.plot(x, np.ones(len(x)) * 749.729, 'b--', label='E_ALLOCATOR')
+plt.plot(x, np.ones(len(x)) * -0.11148648648648649, 'b--', label='E_ALLOCATOR')
 plt.plot(x, y[0], label='M-ALLOCATOR-PS')
 plt.plot(x, y[1], label='M-ALLOCATOR-DP')
 plt.plot(x, y[2], label='M-ALLOCATOR-U')
 plt.plot(x, y[3], label='M-ALLOCATOR-Es')
-#plt.title('Convergência do AG com variação dos métodos de seleção')
-#plt.ylabel('Valor de aptidão médio de {} iterações'.format(iteracoes))
-#plt.xlabel('Geração')
 plt.legend(loc="lower right")
 plt.grid(True)
 plt.show()
@@ -333,24 +320,15 @@ plt.show()
 #####   BOXPLOTS   #####
 
 # Melhor fitness após todas gerações
-#labels = ['Estado estável', 'Roleta', 'Estocástico', 'Truncamento','Aleatório', 'Torneio']
-#labels = ['EE', 'R', 'E', 'Tr','A', 'To']
 labels = ['PS', 'DP', 'U', 'Es']
 plt.boxplot(yBFit, labels=labels)
-#plt.suptitle('Distribuição dos melhores valores de aptidão alcançados')
-#plt.title('por método de seleção')
-#plt.ylabel('Melhor valor de aptidão')
-#plt.xlabel('Resultados de {} iterações'.format(iteracoes))
+plt.grid(axis='y')
 plt.show()
 
 # Tempo gasto no processamento
-#labels = ['Estado estável', 'Roleta', 'Estocástico', 'Truncamento','Aleatório', 'Torneio']
-#labels = ['EE', 'R', 'E', 'Tr','A', 'To']
 labels = ['PS', 'DP', 'U', 'Es']
 plt.boxplot(yTime, labels=labels)
-#plt.title('Distribuição dos tempos de processamento por método de seleção')
-#plt.ylabel('Tempo de processamento ')
-#plt.xlabel('Resultados de {} iterações'.format(iteracoes))
+plt.grid(axis='y')
 plt.show()
 
 
@@ -358,8 +336,5 @@ plt.show()
 #####   Salva em ARQUIVO para outras análises   #####
 t = np.asarray(yTime)
 b = np.asarray(yBFit)
-
-#np.savetxt('result_Selecao_time.txt', t, fmt="%f")
-#np.savetxt('result_Selecao_bFit.txt', b, fmt="%d")
-#np.savetxt('result_Reproducao_time.txt', t, fmt="%f")
-#np.savetxt('result_Reproducao_bFit.txt', b, fmt="%d")
+np.savetxt('result_Cross_time.txt', t, fmt="%f")
+np.savetxt('result_Cross_bFit.txt', b, fmt="%d")
