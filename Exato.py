@@ -19,8 +19,8 @@ solver = pywraplp.Solver("Exato", pywraplp.Solver.CBC_MIXED_INTEGER_PROGRAMMING)
 # Matrizes
 Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J))
 Nij = np.loadtxt('matriz/N{}{}.txt'.format(I,J))
-loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
-Smnp = loaded_Smnp.reshape(loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5)
+#loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
+#Smnp = loaded_Smnp.reshape(loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5)
 loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
 Cmnp = loaded_Cmnp.reshape(loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
 A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
@@ -38,9 +38,9 @@ for i in range(len(Nij)):
         if Nij[i][j] != 0:
             nn.append((i,j))
 
-M = Smnp.shape[0]  # Nr de pontos de demanda
-N = Smnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
-P = Smnp.shape[2]  # Nr de potências sendo avaliadas
+M = Cmnp.shape[0]  # Nr de pontos de demanda
+N = Cmnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
+P = Cmnp.shape[2]  # Nr de potências sendo avaliadas
 Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó de acesso + 1 Centro de Coordenação)
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
 Interc = 1 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)
@@ -174,8 +174,8 @@ solver.Solve()
 #################################
 # Imprimindo a solução no shell #
 #################################
-print("Número de quadrículas aptas a instalação de um eNodeB = %d" % Smnp.shape[0])
-print("Número de quadrículas com clientes = %d" % Smnp.shape[1])
+print("Número de quadrículas aptas a instalação de um eNodeB = %d" % Cmnp.shape[0])
+print("Número de quadrículas com clientes = %d" % Cmnp.shape[1])
 NrClientesAtendidos = 0
 NrQuadriculasCobertas = 0
 NrAssociacoes = 0
@@ -185,7 +185,7 @@ for n in range(0, N):
     NrClientesAtendidos += int(X[n].solution_value()) * Nij[nn[n][0]][nn[n][1]]
     Xstrmatrix += str(int(X[n].solution_value())) + ' '
 Xstrmatrix += ']\n'
-print("Cobertura: {}% --> {} quadrículas cobertas de um total de {} com clientes.".format(100*NrQuadriculasCobertas/Smnp.shape[1], NrQuadriculasCobertas, Smnp.shape[1]))
+print("Cobertura: {}% --> {} quadrículas cobertas de um total de {} com clientes.".format(100*NrQuadriculasCobertas/Cmnp.shape[1], NrQuadriculasCobertas, Cmnp.shape[1]))
 print(str(int(NrClientesAtendidos)) + ' clientes atendidos.')
 print("X " + Xstrmatrix)
 
