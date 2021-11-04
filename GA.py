@@ -13,8 +13,6 @@ otimo = -0.11148648648648649
 
 Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J))
 Nij = np.loadtxt('matriz/N{}{}.txt'.format(I,J))
-#loaded_Smnp = np.loadtxt('matriz/Smnp{}{}.txt'.format(I,J))
-#Smnp = loaded_Smnp.reshape(loaded_Smnp.shape[0], loaded_Smnp.shape[1] // 5, 5)
 loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
 Cmnp = loaded_Cmnp.reshape(loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
 A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
@@ -50,16 +48,16 @@ for m in range(0, M):
 ##############################
 # Parâmetros exclusivos do Algorítmo Genético
 # Parâmetros definidos pela técnica de otimização Hyperas
-generations = 60                                # hyperopt[10 a 100]
+generations = 6                                # hyperopt[10 a 100]
 population_size = 90                            # hyperopt[10 a 200]
 crossover_probability = 0.7822617332190482      # hyperopt[0.1 a 1 ]
 mutation_probability = 0.8697451566145131       # hyperopt[0.1 a 1 ]
 parents = 16                                    # hyperopt[2  a 20 ]
 elitism = 2                                     # hyperopt[1  a  2 ]
 
-parent_selection_type = "sss"
-crossover_type = "single_point"
-mutation_type = "scramble"
+parent_selection_type = "sss"       # Estado Estável - EE
+crossover_type = "single_point"     # Ponto-simples  - PS
+mutation_type = "scramble"          # Embaralhamento - Em
 
 # Cria um indivíduo aleatoriamente
 def individual():
@@ -156,21 +154,7 @@ iteracoes = 2
 antes_global = 0
 lastBestfitness = 0
 
-time            = np.zeros((iteracoes,))
-bFit            = np.zeros((iteracoes,))
-nr_eNodeBs      = np.zeros((iteracoes,))
-nr_cliAtendidos = np.zeros((iteracoes,))
-areaCoberta     = np.zeros((iteracoes,))
-sobrePos2       = np.zeros((iteracoes,))
-sobrePos3       = np.zeros((iteracoes,))
-sobrePos4       = np.zeros((iteracoes,))
-sobrePos5       = np.zeros((iteracoes,))
-sobrePos6       = np.zeros((iteracoes,))
-sobrePos7       = np.zeros((iteracoes,))
-sobrePos8       = np.zeros((iteracoes,))
-sobrePos9       = np.zeros((iteracoes,))
-PRD             = np.zeros((iteracoes,))
-
+# time, bFit, nr_eNodeBs, nr_cliAtendidos, areaCoberta, sobrePos2, sobrePos3, sobrePos4, sobrePos5, sobrePos6, sobrePos7, sobrePos8, sobrePos9, PRD
 result = np.zeros((iteracoes, 14))
 
 # Variáveis utilizadas para impressão dos gráficos de convergência
@@ -199,14 +183,14 @@ for it in range(iteracoes):
     ###################################################
     sol = ga_instance.best_solution()[0].reshape(M, P)
 
-    time[it] = result[it][0] = t.time() - antes_global
-    bFit[it] = result[it][1] = ga_instance.best_solution()[1]
+    result[it][0] = t.time() - antes_global                                             # time
+    result[it][1] = ga_instance.best_solution()[1]                                      # bFit
 
     aux = 0
     for m in range(M):
         for p in range(P):
             aux += sol[m][p]
-    nr_eNodeBs[it] = result[it][2] = aux
+    result[it][2] = aux                                                                 # nr_eNodeBs
 
     # nr_CliAtendidos
     cliNaoAtendidos = np.zeros((N))
@@ -238,37 +222,7 @@ for it in range(iteracoes):
         nrTotalClientes += Nij[nn[n][0]][nn[n][1]]
         nrClientesNaoAtendidos += cliNaoAtendidos[n]
 
-    nr_cliAtendidos[it] = result[it][3] = nrTotalClientes - nrClientesNaoAtendidos
-
-
-
-
-
-
-    interf = 0
-    for m in range(M):
-        for p in range(P):
-            interf += grauInterf[m][p] * sol[m][p]
-
-    # valorObjetivo = NrClientesAtendidos/200 - 1/9 * NrAntenasInstaladas - 1/8 * interf
-    valorObjetivo = - 1 / 8 * interf
-
-    if (ga_instance.best_solution()[1] == valorObjetivo):
-        print("O Valor Objetivo avaliado é idêntico ao retornado pelo solver = {}".format(valorObjetivo))
-    else:
-        print("Valor objetivo (PyGAD) = {}".format(ga_instance.best_solution()[1]))
-        print("Valor objetivo (cálculo) = {}".format(valorObjetivo))
-    print("Grau de interferência = %f" % interf)
-
-
-
-
-
-
-
-
-
-
+    result[it][3] = nrTotalClientes - nrClientesNaoAtendidos                            # nr_cliAtendidos
 
     ###############################################################################
     # Coordenadas dos centros das quadrículas (Cij) para o cálculo das distâncias #
@@ -277,14 +231,14 @@ for it in range(iteracoes):
     ###   AD                                 ###
     ###   BC                                 ###
     ###   (lat, long)
-    A = (-20.115437, -44.16269)
-    B = (-20.159446, -44.16269)
-    D = (-20.115437, -44.10444)
+    AA = (-20.115437, -44.16269)
+    BB = (-20.159446, -44.16269)
+    DD = (-20.115437, -44.10444)
 
-    dl = (A[0] - B[0]) / I
-    dc = (D[1] - A[1]) / J
+    dl = (AA[0] - BB[0]) / I
+    dc = (DD[1] - AA[1]) / J
 
-    c00 = (A[0] - dl / 2, A[1] + dc / 2)
+    c00 = (AA[0] - dl / 2, AA[1] + dc / 2)
 
     Cij = np.zeros((I, J)).tolist()
     for i in range(I):
@@ -292,7 +246,7 @@ for it in range(iteracoes):
             Cij[i][j] = (c00[0] - i * dl, c00[1] + j * dc)
             # distância em km entre os centros das quadrículas 00 e 01 = d.GeodesicDistance(Cij[0][0],Cij[0][1]).km
 
-    Cobertura = np.zeros((I, J))
+    Cobertura = np.zeros((I, J), dtype=int)
     pTx = [20, 25, 30, 35, 40]  # Potências de Tx avaliadas
 
     ##########      Parâmetros para o cálculo do Path Loss      ##########
@@ -352,19 +306,18 @@ for it in range(iteracoes):
                 if Cobertura[i][j] == 8: quadSobrepostas8 += 1
                 if Cobertura[i][j] == 9: quadSobrepostas9 += 1
 
-    areaCoberta[it] = result[it][4] = quadCobertas * areaDaQuadricula
+    result[it][4] = quadCobertas * areaDaQuadricula                                     # areaCoberta
 
-    sobrePos2[it] = result[it][5] = quadSobrepostas2 * areaDaQuadricula
-    sobrePos3[it] = result[it][6] = quadSobrepostas3 * areaDaQuadricula
-    sobrePos4[it] = result[it][7] = quadSobrepostas4 * areaDaQuadricula
-    sobrePos5[it] = result[it][8] = quadSobrepostas5 * areaDaQuadricula
-    sobrePos6[it] = result[it][9] = quadSobrepostas6 * areaDaQuadricula
-    sobrePos7[it] = result[it][10] = quadSobrepostas7 * areaDaQuadricula
-    sobrePos8[it] = result[it][11] = quadSobrepostas8 * areaDaQuadricula
-    sobrePos9[it] = result[it][12] = quadSobrepostas9 * areaDaQuadricula
+    result[it][5] = quadSobrepostas2 * areaDaQuadricula                                 # sobrePos2
+    result[it][6] = quadSobrepostas3 * areaDaQuadricula                                 # sobrePos3
+    result[it][7] = quadSobrepostas4 * areaDaQuadricula                                 # sobrePos4
+    result[it][8] = quadSobrepostas5 * areaDaQuadricula                                 # sobrePos5
+    result[it][9] = quadSobrepostas6 * areaDaQuadricula                                 # sobrePos6
+    result[it][10] = quadSobrepostas7 * areaDaQuadricula                                # sobrePos7
+    result[it][11] = quadSobrepostas8 * areaDaQuadricula                                # sobrePos8
+    result[it][12] = quadSobrepostas9 * areaDaQuadricula                                # sobrePos9
 
-
-    PRD[it] = result[it][13] = (otimo - bFit[it])/otimo
+    result[it][13] = 100 * (otimo - result[it][1]) / abs(otimo)                         # PRD
 
 
 
@@ -379,7 +332,7 @@ for it in range(iteracoes):
 
 #####     GRÁFICO DE CONVERGÊNCIA     #####
 plt.plot(x, np.ones(len(x)) * otimo, 'b--', label='E_ALLOCATOR')
-plt.plot(x, y, label='M-ALLOCATOR-PS')
+plt.plot(x, y, label='M-ALLOCATOR')
 plt.legend(loc="lower right")
 plt.grid(True)
 plt.show()
@@ -409,4 +362,4 @@ plt.show()
 #np.savetxt('result_Cross_bFit.txt', b, fmt="%d")
 
 result = np.asarray(result)
-np.savetxt('result_i{}c{}.txt'.format(Interc,consensoCobertura), result)
+np.savetxt('result{}{}_i{}c{}.txt'.format(I,J,Interc,consensoCobertura), result)
