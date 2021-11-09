@@ -6,16 +6,18 @@ import geopy.distance as d
 import math
 import matplotlib.pyplot as plt
 
-I,J = 12,15                 # Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
-Interc = 1                  # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)(0, 1, 2, 3)
-consensoCobertura = 0.95    # Porcentagem do número de clientes que devem ser atendidos (0.8, 0.9, 0.95, 0.98, 1)
-otimo = -0.11148648648648649
+I,J = 20,25                 # Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
+Interc = 3                  # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)(0, 1, 2, 3)
+consensoCobertura = 0.8    # Porcentagem do número de clientes que devem ser atendidos (0.8, 0.9, 0.95, 0.98, 1)
 
-Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J))
-Nij = np.loadtxt('matriz/N{}{}.txt'.format(I,J))
-loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J))
+o = np.loadtxt('result/Exato{}{}_i{}c{}.txt'.format(I,J,Interc,consensoCobertura))
+otimo = o[1]
+
+Mij = np.loadtxt('matriz/M{}{}.txt'.format(I,J), dtype=int)
+Nij = np.loadtxt('matriz/N{}{}.txt'.format(I,J), dtype=int)
+loaded_Cmnp = np.loadtxt('matriz/Cmnp{}{}.txt'.format(I,J), dtype=int)
 Cmnp = loaded_Cmnp.reshape(loaded_Cmnp.shape[0], loaded_Cmnp.shape[1] // 5, 5)
-A = np.loadtxt('matriz/A{}{}.txt'.format(I,J))
+A = np.loadtxt('matriz/A{}{}.txt'.format(I,J), dtype=int)
 
 # Tuplas das quadrículas aptas a receber um eNodeB
 mm = []
@@ -48,7 +50,7 @@ for m in range(0, M):
 ##############################
 # Parâmetros exclusivos do Algorítmo Genético
 # Parâmetros definidos pela técnica de otimização Hyperas
-generations = 6                                # hyperopt[10 a 100]
+generations = 60                                # hyperopt[10 a 100]
 population_size = 90                            # hyperopt[10 a 200]
 crossover_probability = 0.7822617332190482      # hyperopt[0.1 a 1 ]
 mutation_probability = 0.8697451566145131       # hyperopt[0.1 a 1 ]
@@ -150,7 +152,7 @@ def callback_generation(ga_instance):     #CallBack para acessar as informaçõe
     y[ga_instance.generations_completed - 1] += (ga_instance.best_solution()[1]) / iteracoes
 
 
-iteracoes = 2
+iteracoes = 30
 antes_global = 0
 lastBestfitness = 0
 
@@ -162,6 +164,9 @@ y = np.zeros((generations))
 x = np.arange(generations)
 
 for it in range(iteracoes):
+    print("--------------------------------------------------------------")
+    print("------------------- Iteração {}/{} --------------------------".format(it+1,iteracoes))
+    print("--------------------------------------------------------------")
     antes_global = t.time()
     ga_instance = pygad.GA(num_generations=generations,
                            num_parents_mating=parents,
@@ -331,11 +336,11 @@ for it in range(iteracoes):
 ###########################
 
 #####     GRÁFICO DE CONVERGÊNCIA     #####
-plt.plot(x, np.ones(len(x)) * otimo, 'b--', label='E_ALLOCATOR')
-plt.plot(x, y, label='M-ALLOCATOR')
-plt.legend(loc="lower right")
-plt.grid(True)
-plt.show()
+#plt.plot(x, np.ones(len(x)) * otimo, 'b--', label='E_ALLOCATOR')
+#plt.plot(x, y, label='M-ALLOCATOR')
+#plt.legend(loc="lower right")
+#plt.grid(True)
+#plt.show()
 
 
 
@@ -362,4 +367,4 @@ plt.show()
 #np.savetxt('result_Cross_bFit.txt', b, fmt="%d")
 
 result = np.asarray(result)
-np.savetxt('result{}{}_i{}c{}.txt'.format(I,J,Interc,consensoCobertura), result)
+np.savetxt('result/GA{}{}_i{}c{}.txt'.format(I,J,Interc,consensoCobertura), result)

@@ -3,8 +3,9 @@ import numpy as np
 import geopy.distance as d
 import math
 
-###   Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
-I,J = 12,15
+I,J = 40,50                 # Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
+Interc = 0                  # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs) (0, 1, 2, 3)
+consensoCobertura = 0.8     # Porcentagem do número de clientes que devem ser atendidos (0.8, 0.9, 0.95, 0.98, 1)
 
 def m2a(i,j,line_length):
     return i*line_length + j
@@ -43,8 +44,6 @@ N = Cmnp.shape[1]  # Nr de possíveis locais para instalação de eNodeBs
 P = Cmnp.shape[2]  # Nr de potências sendo avaliadas
 Ant = 9  # Nr máximo de antenas (No CCOp Mv o número máximo é 9 = 8 Vtr Nó de acesso + 1 Centro de Coordenação)
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
-Interc = 1 # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)
-consensoCobertura = 0.95 # Porcentagem do número de clientes que devem ser atendidos
 
 grauInterf = np.zeros((M,P)) # Medida aproximada do impacto de cada eNodeB sobre a interferência total (aproximada, pois a medida exata é dependente do conjunto de eNodeBs ativadas em cada solução)
 for m in range(0, M):
@@ -222,6 +221,12 @@ print("Tempo de processamento = %f" % (solver.wall_time()/1000))
 ###################################################
 # Avaliando a solução e armazenando suas métricas #
 ###################################################
+result = np.zeros(14)
+result[0] = solver.wall_time()/1000                                         # time
+result[1] = objetivo.Value()                                                # ótimo
+result[2] = NrAntenasInstaladas                                             # nr_eNodeBs
+result[3] = NrClientesAtendidos                                             # nr_cliAtendidos
+
 interf = 0
 for m in range(M):
     for p in range(P):
@@ -235,12 +240,10 @@ if (objetivo.Value() == valorObjetivo):
 else:
     print("Valor objetivo (solver) = {}".format(objetivo.Value()))
     print("Valor objetivo (cálculo) = {}".format(valorObjetivo))
-print("Grau de interferência = %f" % interf)
 
 ###############################################################################
 # Coordenadas dos centros das quadrículas (Cij) para o cálculo das distâncias #
 ###############################################################################
-
 ###   Delimitadores da área de atuação   ###
 ###   AD                                 ###
 ###   BC                                 ###
@@ -324,3 +327,19 @@ print("Quadrículas com sobreposição de 6 eNB = {} --> área {}".format(quadSo
 print("Quadrículas com sobreposição de 7 eNB = {} --> área {}".format(quadSobrepostas7, quadSobrepostas7*areaDaQuadricula))
 print("Quadrículas com sobreposição de 8 eNB = {} --> área {}".format(quadSobrepostas8, quadSobrepostas8*areaDaQuadricula))
 print("Quadrículas com sobreposição de 9 eNB = {} --> área {}".format(quadSobrepostas9, quadSobrepostas9*areaDaQuadricula))
+
+result[4] = quadCobertas * areaDaQuadricula                                 # areaCoberta
+
+result[5] = quadSobrepostas2 * areaDaQuadricula                             # sobrePos2
+result[6] = quadSobrepostas3 * areaDaQuadricula                             # sobrePos3
+result[7] = quadSobrepostas4 * areaDaQuadricula                             # sobrePos4
+result[8] = quadSobrepostas5 * areaDaQuadricula                             # sobrePos5
+result[9] = quadSobrepostas6 * areaDaQuadricula                             # sobrePos6
+result[10] = quadSobrepostas7 * areaDaQuadricula                            # sobrePos7
+result[11] = quadSobrepostas8 * areaDaQuadricula                            # sobrePos8
+result[12] = quadSobrepostas9 * areaDaQuadricula                            # sobrePos9
+
+result[13] = 1                                                              # PRD
+
+result = np.asarray(result)
+np.savetxt('result/Exato{}{}_i{}c{}.txt'.format(I,J,Interc,consensoCobertura), result)
