@@ -5,8 +5,10 @@ import math
 import time
 
 I,J = 12,15     # Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
-k = 3           # Nr de clusters e consequentemente eNodeBs
+k = 1           # Nr de clusters e consequentemente eNodeBs
 
+o = np.loadtxt('result/Exato{}{}_i{}c{}.txt'.format(I,J,Interc,consensoCobertura))
+otimo = o[1]
 Usu = 100  # Nr máximo de usuários associados a uma eNodeB
 
 def ordem(n):
@@ -155,7 +157,7 @@ for it in range(iteracoes):
                 pRx = 30 + 13 - PL
                 if (pRx > -100):
                     Cobertura[i][j] += 1
-    print(Cobertura)
+    #print(Cobertura)
 
     areaDaQuadricula = d.GeodesicDistance(Cij[0][0], Cij[0][1]).km
     areaDaQuadricula *= areaDaQuadricula
@@ -193,7 +195,7 @@ for it in range(iteracoes):
     result[it][11] = quadSobrepostas8 * areaDaQuadricula                            # sobrePos8
     result[it][12] = quadSobrepostas9 * areaDaQuadricula                            # sobrePos9
 
-    result[it][13] = None                                                           # PRD
+    result[it][13] = 100 * (otimo - result[it][1]) / abs(otimo)                     # PRD
 
 result = np.asarray(result)
 np.savetxt('result/Heur{}{}_k{}.txt'.format(I,J,k), result)
