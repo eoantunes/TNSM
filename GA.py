@@ -4,7 +4,6 @@ import random
 import time as t
 import geopy.distance as d
 import math
-import matplotlib.pyplot as plt
 
 I,J = 12,15                 # Dimensão dos cenários:   12,15 - 20,25 - 24,30 - 36,45 - 40,50 - 60,75 - 72,90 - 108,135 - 120,150 - 216,270 - 360,450 - 540,675
 grauInterc = [0, 1, 2, 3]                  # Nr mínimo de nós interconectados (uma eNodeB precisa estar conectada a mais Interc eNodeBs)(0, 1, 2, 3)
