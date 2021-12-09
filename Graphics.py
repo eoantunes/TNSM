@@ -451,10 +451,10 @@ heur_fitStd.append(     [np.std(H2430_k8[:,1]),     np.std(H2430_k5[:,1]),      
 ###   Cenário Brum3645   ###
 exact_fitValues.append( [E3645_i3c08[1],            E3645_i3c09[1],             E3645_i3c095[1],            E3645_i3c098[1],            E3645_i3c1[1]])
 ga_fitMeans.append(     [np.mean(M3645_i3c08[:,1]), np.mean(M3645_i3c09[:,1]),  np.mean(M3645_i3c095[:,1]), np.mean(M3645_i3c098[:,1]), np.mean(M3645_i3c1[:,1])])
-heur_fitMeans.append(   [np.mean(H3645_k8[:,1]),    np.mean(H3645_k5[:,1]),     np.mean(H3645_k6[:,1]),     np.mean(H3645_k6[:,1]),     np.mean(H3645_k6[:,1])])
+heur_fitMeans.append(   [np.mean(H3645_k5[:,1]),    np.mean(H3645_k7[:,1]),     np.mean(H3645_k6[:,1]),     np.mean(H3645_k6[:,1]),     np.mean(H3645_k7[:,1])])
 
 ga_fitStd.append(       [np.std(M3645_i3c08[:,1]),  np.std(M3645_i3c09[:,1]),   np.std(M3645_i3c095[:,1]),  np.std(M3645_i3c098[:,1]),  np.std(M3645_i3c1[:,1])])
-heur_fitStd.append(     [np.std(H3645_k8[:,1]),     np.std(H3645_k5[:,1]),      np.std(H3645_k6[:,1]),      np.std(H3645_k6[:,1]),      np.std(H3645_k6[:,1])])
+heur_fitStd.append(     [np.std(H3645_k5[:,1]),     np.std(H3645_k7[:,1]),      np.std(H3645_k6[:,1]),      np.std(H3645_k6[:,1]),      np.std(H3645_k7[:,1])])
 
 
 fig, axs = plt.subplots(1, 4, sharey=True)
@@ -491,7 +491,7 @@ axs[0].set_ylabel('Interference')
 fig.add_subplot(111, frameon=False)
 # hide tick and tick label of the big axis
 plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
-plt.xlabel("Coverage")
+plt.xlabel("Coverage Consensus (%)")
 
 #handles, labels = axs[3].get_legend_handles_labels()
 #fig.legend(handles, labels, bbox_to_anchor=(1, 1), loc='upper left', fontsize='large') # loc='upper right'       fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
@@ -520,29 +520,28 @@ ga_NreNBsStd.append(       [np.std(M1215_i3c08[:,2]),  np.std(M1215_i3c09[:,2]),
 heur_NreNBsStd.append(     [np.std(H1215_k5[:,2]),     np.std(H1215_k7[:,2]),      np.std(H1215_k6[:,2]),      np.std(H1215_k5[:,2]),      np.std(H1215_k4[:,2])])
 
 ###   Cenário Brum2025   ###
-exact_fitValues.append( [E2025_i3c08[2],            E2025_i3c09[2],             E2025_i3c095[2],            E2025_i3c098[2],            E2025_i3c1[2]])
-ga_fitMeans.append(     [np.mean(M2025_i3c08[:,2]), np.mean(M2025_i3c09[:,2]),  np.mean(M2025_i3c095[:,2]), np.mean(M2025_i3c098[:,2]), np.mean(M2025_i3c1[:,2])])
-heur_fitMeans.append(   [np.mean(H2025_k6[:,2]),    np.mean(H2025_k6[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k6[:,2])])
+exact_NreNBs.append(       [E2025_i3c08[2],            E2025_i3c09[2],             E2025_i3c095[2],            E2025_i3c098[2],            E2025_i3c1[2]])
+ga_NreNBsMeans.append(     [np.mean(M2025_i3c08[:,2]), np.mean(M2025_i3c09[:,2]),  np.mean(M2025_i3c095[:,2]), np.mean(M2025_i3c098[:,2]), np.mean(M2025_i3c1[:,2])])
+heur_NreNBsMeans.append(   [np.mean(H2025_k6[:,2]),    np.mean(H2025_k6[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k6[:,2])])
 
-ga_fitStd.append(       [np.std(M2025_i3c08[:,2]),  np.std(M2025_i3c09[:,2]),   np.std(M2025_i3c095[:,2]),  np.std(M2025_i3c098[:,2]),  np.std(M2025_i3c1[:,2])])
-heur_fitStd.append(     [np.std(H2025_k6[:,2]),     np.std(H2025_k6[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k6[:,2])])
+ga_NreNBsStd.append(       [np.std(M2025_i3c08[:,2]),  np.std(M2025_i3c09[:,2]),   np.std(M2025_i3c095[:,2]),  np.std(M2025_i3c098[:,2]),  np.std(M2025_i3c1[:,2])])
+heur_NreNBsStd.append(     [np.std(H2025_k6[:,2]),     np.std(H2025_k6[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k6[:,2])])
 
 ###   Cenário Brum2430   ###
-exact_fitValues.append( [E2430_i3c08[2],            E2430_i3c09[2],             E2430_i3c095[2],            E2430_i3c098[2],            E2430_i3c1[2]])
-ga_fitMeans.append(     [np.mean(M2430_i3c08[:,2]), np.mean(M2430_i3c09[:,2]),  np.mean(M2430_i3c095[:,2]), np.mean(M2430_i3c098[:,2]), np.mean(M2430_i3c1[:,2])])
-heur_fitMeans.append(   [np.mean(H2430_k8[:,2]),    np.mean(H2430_k5[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2])])
+exact_NreNBs.append(       [E2430_i3c08[2],            E2430_i3c09[2],             E2430_i3c095[2],            E2430_i3c098[2],            E2430_i3c1[2]])
+ga_NreNBsMeans.append(     [np.mean(M2430_i3c08[:,2]), np.mean(M2430_i3c09[:,2]),  np.mean(M2430_i3c095[:,2]), np.mean(M2430_i3c098[:,2]), np.mean(M2430_i3c1[:,2])])
+heur_NreNBsMeans.append(   [np.mean(H2430_k8[:,2]),    np.mean(H2430_k5[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2])])
 
-ga_fitStd.append(       [np.std(M2430_i3c08[:,2]),  np.std(M2430_i3c09[:,2]),   np.std(M2430_i3c095[:,2]),  np.std(M2430_i3c098[:,2]),  np.std(M2430_i3c1[:,2])])
-heur_fitStd.append(     [np.std(H2430_k8[:,2]),     np.std(H2430_k5[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2])])
+ga_NreNBsStd.append(       [np.std(M2430_i3c08[:,2]),  np.std(M2430_i3c09[:,2]),   np.std(M2430_i3c095[:,2]),  np.std(M2430_i3c098[:,2]),  np.std(M2430_i3c1[:,2])])
+heur_NreNBsStd.append(     [np.std(H2430_k8[:,2]),     np.std(H2430_k5[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2])])
 
 ###   Cenário Brum3645   ###
-exact_fitValues.append( [E3645_i3c08[2],            E3645_i3c09[2],             E3645_i3c095[2],            E3645_i3c098[2],            E3645_i3c1[2]])
-ga_fitMeans.append(     [np.mean(M3645_i3c08[:,2]), np.mean(M3645_i3c09[:,2]),  np.mean(M3645_i3c095[:,2]), np.mean(M3645_i3c098[:,2]), np.mean(M3645_i3c1[:,2])])
-heur_fitMeans.append(   [np.mean(H3645_k8[:,2]),    np.mean(H3645_k5[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k6[:,2])])
+exact_NreNBs.append(       [E3645_i3c08[2],            E3645_i3c09[2],             E3645_i3c095[2],            E3645_i3c098[2],            E3645_i3c1[2]])
+ga_NreNBsMeans.append(     [np.mean(M3645_i3c08[:,2]), np.mean(M3645_i3c09[:,2]),  np.mean(M3645_i3c095[:,2]), np.mean(M3645_i3c098[:,2]), np.mean(M3645_i3c1[:,2])])
+heur_NreNBsMeans.append(   [np.mean(H3645_k5[:,2]),    np.mean(H3645_k7[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k7[:,2])])
 
-ga_fitStd.append(       [np.std(M3645_i3c08[:,2]),  np.std(M3645_i3c09[:,2]),   np.std(M3645_i3c095[:,2]),  np.std(M3645_i3c098[:,2]),  np.std(M3645_i3c1[:,2])])
-heur_fitStd.append(     [np.std(H3645_k8[:,2]),     np.std(H3645_k5[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k6[:,2])])
-
+ga_NreNBsStd.append(       [np.std(M3645_i3c08[:,2]),  np.std(M3645_i3c09[:,2]),   np.std(M3645_i3c095[:,2]),  np.std(M3645_i3c098[:,2]),  np.std(M3645_i3c1[:,2])])
+heur_NreNBsStd.append(     [np.std(H3645_k5[:,2]),     np.std(H3645_k7[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k7[:,2])])
 
 fig, axs = plt.subplots(1, 4, sharey=True)
 axs[0].plot(x, exact_NreNBs[0], marker='s', color='r', label="E-ALLOCATOR")
@@ -554,8 +553,8 @@ axs[1].errorbar(x, ga_NreNBsMeans[1],     ga_NreNBsStd[1],   color='b',  fmt='o'
 axs[1].errorbar(x, heur_NreNBsMeans[1],   heur_NreNBsStd[1], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
 
 axs[2].plot(x, exact_NreNBs[2], marker='s', color='r', label="E-ALLOCATOR")
-axs[2].errorbar(x, ga_NreNBsMeans[2],     ga_fitStd[2],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
-axs[2].errorbar(x, heur_NreNBsMeans[2],   heur_fitStd[2], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+axs[2].errorbar(x, ga_NreNBsMeans[2],     ga_NreNBsStd[2],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
+axs[2].errorbar(x, heur_NreNBsMeans[2],   heur_NreNBsStd[2], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
 
 axs[3].plot(x, exact_NreNBs[3], marker='s', color='r', label="E-ALLOCATOR")
 axs[3].errorbar(x, ga_NreNBsMeans[3],     ga_NreNBsStd[3],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
@@ -578,7 +577,93 @@ axs[0].set_ylabel('Number of eNodeBs deployed')
 fig.add_subplot(111, frameon=False)
 # hide tick and tick label of the big axis
 plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
-plt.xlabel("Coverage")
+plt.xlabel("Coverage Consensus (%)")
+
+#handles, labels = axs[3].get_legend_handles_labels()
+#fig.legend(handles, labels, bbox_to_anchor=(1, 1), loc='upper left', fontsize='large') # loc='upper right'       fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
+axs[3].legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.1)
+fig.set_size_inches(13, 3.0)
+fig.tight_layout(pad=0)
+plt.show()
+
+#############################################################################
+###   Gráfico [Área Coberta x Consenso de Cobertura] (por cenário)   ###
+#############################################################################
+x = [0.8, 0.9, 0.95, 0.98, 1]
+cenarios = ['Brum1215', 'Brum2025', 'Brum2430', 'Brum3645']
+exact_Area = []
+ga_AreaMeans = []
+heur_AreaMeans = []
+ga_AreaStd = []
+heur_AreaStd =[]
+
+###   Cenário Brum1215   ###
+exact_Area.append(       [E1215_i3c08[4],            E1215_i3c09[4],             E1215_i3c095[4],            E1215_i3c098[4],            E1215_i3c1[4]])
+ga_AreaMeans.append(     [np.mean(M1215_i3c08[:,4]), np.mean(M1215_i3c09[:,4]),  np.mean(M1215_i3c095[:,4]), np.mean(M1215_i3c098[:,4]), np.mean(M1215_i3c1[:,4])])
+heur_AreaMeans.append(   [np.mean(H1215_k5[:,4]),    np.mean(H1215_k7[:,4]),     np.mean(H1215_k6[:,4]),     np.mean(H1215_k5[:,4]),     np.mean(H1215_k4[:,4])])
+
+ga_AreaStd.append(       [np.std(M1215_i3c08[:,4]),  np.std(M1215_i3c09[:,4]),   np.std(M1215_i3c095[:,4]),  np.std(M1215_i3c098[:,4]),  np.std(M1215_i3c1[:,4])])
+heur_AreaStd.append(     [np.std(H1215_k5[:,4]),     np.std(H1215_k7[:,4]),      np.std(H1215_k6[:,4]),      np.std(H1215_k5[:,4]),      np.std(H1215_k4[:,4])])
+
+###   Cenário Brum2025   ###
+exact_Area.append(       [E2025_i3c08[4],            E2025_i3c09[4],             E2025_i3c095[4],            E2025_i3c098[4],            E2025_i3c1[4]])
+ga_AreaMeans.append(     [np.mean(M2025_i3c08[:,4]), np.mean(M2025_i3c09[:,4]),  np.mean(M2025_i3c095[:,4]), np.mean(M2025_i3c098[:,4]), np.mean(M2025_i3c1[:,4])])
+heur_AreaMeans.append(   [np.mean(H2025_k6[:,4]),    np.mean(H2025_k6[:,4]),     np.mean(H2025_k7[:,4]),     np.mean(H2025_k7[:,4]),     np.mean(H2025_k6[:,4])])
+
+ga_AreaStd.append(       [np.std(M2025_i3c08[:,4]),  np.std(M2025_i3c09[:,4]),   np.std(M2025_i3c095[:,4]),  np.std(M2025_i3c098[:,4]),  np.std(M2025_i3c1[:,4])])
+heur_AreaStd.append(     [np.std(H2025_k6[:,4]),     np.std(H2025_k6[:,4]),      np.std(H2025_k7[:,4]),      np.std(H2025_k7[:,4]),      np.std(H2025_k6[:,4])])
+
+###   Cenário Brum2430   ###
+exact_Area.append(       [E2430_i3c08[4],            E2430_i3c09[4],             E2430_i3c095[4],            E2430_i3c098[4],            E2430_i3c1[4]])
+ga_AreaMeans.append(     [np.mean(M2430_i3c08[:,4]), np.mean(M2430_i3c09[:,4]),  np.mean(M2430_i3c095[:,4]), np.mean(M2430_i3c098[:,4]), np.mean(M2430_i3c1[:,4])])
+heur_AreaMeans.append(   [np.mean(H2430_k8[:,4]),    np.mean(H2430_k5[:,4]),     np.mean(H2430_k6[:,4]),     np.mean(H2430_k6[:,4]),     np.mean(H2430_k6[:,4])])
+
+ga_AreaStd.append(       [np.std(M2430_i3c08[:,4]),  np.std(M2430_i3c09[:,4]),   np.std(M2430_i3c095[:,4]),  np.std(M2430_i3c098[:,4]),  np.std(M2430_i3c1[:,4])])
+heur_AreaStd.append(     [np.std(H2430_k8[:,4]),     np.std(H2430_k5[:,4]),      np.std(H2430_k6[:,4]),      np.std(H2430_k6[:,4]),      np.std(H2430_k6[:,4])])
+
+###   Cenário Brum3645   ###
+exact_Area.append(       [E3645_i3c08[4],            E3645_i3c09[4],             E3645_i3c095[4],            E3645_i3c098[4],            E3645_i3c1[4]])
+ga_AreaMeans.append(     [np.mean(M3645_i3c08[:,4]), np.mean(M3645_i3c09[:,4]),  np.mean(M3645_i3c095[:,4]), np.mean(M3645_i3c098[:,4]), np.mean(M3645_i3c1[:,4])])
+heur_AreaMeans.append(   [np.mean(H3645_k5[:,4]),    np.mean(H3645_k7[:,4]),     np.mean(H3645_k6[:,4]),     np.mean(H3645_k6[:,4]),     np.mean(H3645_k7[:,4])])
+
+ga_AreaStd.append(       [np.std(M3645_i3c08[:,4]),  np.std(M3645_i3c09[:,4]),   np.std(M3645_i3c095[:,4]),  np.std(M3645_i3c098[:,4]),  np.std(M3645_i3c1[:,4])])
+heur_AreaStd.append(     [np.std(H3645_k5[:,4]),     np.std(H3645_k7[:,4]),      np.std(H3645_k6[:,4]),      np.std(H3645_k6[:,4]),      np.std(H3645_k7[:,4])])
+
+fig, axs = plt.subplots(1, 4, sharey=True)
+axs[0].plot(x, exact_Area[0], marker='s', color='r', label="E-ALLOCATOR")
+axs[0].errorbar(x, ga_AreaMeans[0],     ga_AreaStd[0],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
+axs[0].errorbar(x, heur_AreaMeans[0],   heur_AreaStd[0], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+
+axs[1].plot(x, exact_Area[1], marker='s', color='r', label="E-ALLOCATOR")
+axs[1].errorbar(x, ga_AreaMeans[1],     ga_AreaStd[1],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
+axs[1].errorbar(x, heur_AreaMeans[1],   heur_AreaStd[1], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+
+axs[2].plot(x, exact_Area[2], marker='s', color='r', label="E-ALLOCATOR")
+axs[2].errorbar(x, ga_AreaMeans[2],     ga_AreaStd[2],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
+axs[2].errorbar(x, heur_AreaMeans[2],   heur_AreaStd[2], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+
+axs[3].plot(x, exact_Area[3], marker='s', color='r', label="E-ALLOCATOR")
+axs[3].errorbar(x, ga_AreaMeans[3],     ga_AreaStd[3],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
+axs[3].errorbar(x, heur_AreaMeans[3],   heur_AreaStd[3], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+
+axs[0].grid(alpha=0.4)
+axs[1].grid(alpha=0.4)
+axs[2].grid(alpha=0.4)
+axs[3].grid(alpha=0.4)
+#axs[4].remove()
+
+axs[0].set_title(cenarios[0])
+axs[1].set_title(cenarios[1])
+axs[2].set_title(cenarios[2])
+axs[3].set_title(cenarios[3])
+
+axs[0].set_ylabel('Coverage Area (km\u00b2)')
+
+# add a big axis, hide frame
+fig.add_subplot(111, frameon=False)
+# hide tick and tick label of the big axis
+plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+plt.xlabel("Coverage Consensus (%)")
 
 #handles, labels = axs[3].get_legend_handles_labels()
 #fig.legend(handles, labels, bbox_to_anchor=(1, 1), loc='upper left', fontsize='large') # loc='upper right'       fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
