@@ -407,7 +407,8 @@ axs[1, 1].set_title('Coverage 98%')
 axs[1, 2].set_title('Coverage 100%')
 axs[0, 2].remove()
 handles, labels = axs[0, 0].get_legend_handles_labels()
-fig.legend(handles, labels, loc='upper right', fontsize='large') #fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
+fig.legend(handles, labels, loc='upper right', fontsize='medium') #fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
+#axs[1, 2].legend(bbox_to_anchor=(0.5, 2), loc='upper left', borderaxespad=0.1)
 fig.set_size_inches(9.2, 4.8)
 fig.tight_layout(pad=0.1)
 plt.yscale('log')
@@ -416,7 +417,7 @@ plt.show()
 #################################################################################
 ###   Gráfico [Grau de Interferência x Consenso de Cobertura] (por cenário)   ###
 #################################################################################
-x = [0.8, 0.9, 0.95, 0.98, 1]
+x = [80, 90, 95, 98, 100]
 cenarios = ['Brum1215', 'Brum2025', 'Brum2430', 'Brum3645']
 exact_fitValues = []
 ga_fitMeans = []
@@ -425,36 +426,36 @@ ga_fitStd = []
 heur_fitStd =[]
 
 ###   Cenário Brum1215   ###
-exact_fitValues.append( [E1215_i3c08[1],            E1215_i3c09[1],             E1215_i3c095[1],            E1215_i3c098[1],            E1215_i3c1[1]])
-ga_fitMeans.append(     [np.mean(M1215_i3c08[:,1]), np.mean(M1215_i3c09[:,1]),  np.mean(M1215_i3c095[:,1]), np.mean(M1215_i3c098[:,1]), np.mean(M1215_i3c1[:,1])])
-heur_fitMeans.append(   [np.mean(H1215_k5[:,1]),    np.mean(H1215_k7[:,1]),     np.mean(H1215_k6[:,1]),     np.mean(H1215_k5[:,1]),     np.mean(H1215_k4[:,1])])
+exact_fitValues.append( [E1215_i3c08[1]*(-100),            E1215_i3c09[1]*(-100),             E1215_i3c095[1]*(-100),            E1215_i3c098[1]*(-100),            E1215_i3c1[1]*(-100)                ])
+ga_fitMeans.append(     [np.mean(M1215_i3c08[:,1])*(-100), np.mean(M1215_i3c09[:,1])*(-100),  np.mean(M1215_i3c095[:,1])*(-100), np.mean(M1215_i3c098[:,1])*(-100), np.mean(M1215_i3c1[:,1])*(-100)     ])
+heur_fitMeans.append(   [np.mean(H1215_k5[:,1])*(-100),    np.mean(H1215_k7[:,1])*(-100),     np.mean(H1215_k6[:,1])*(-100),     np.mean(H1215_k5[:,1])*(-100),     np.mean(H1215_k4[:,1])*(-100)       ])
 
-ga_fitStd.append(       [np.std(M1215_i3c08[:,1]),  np.std(M1215_i3c09[:,1]),   np.std(M1215_i3c095[:,1]),  np.std(M1215_i3c098[:,1]),  np.std(M1215_i3c1[:,1])])
-heur_fitStd.append(     [np.std(H1215_k5[:,1]),     np.std(H1215_k7[:,1]),      np.std(H1215_k6[:,1]),      np.std(H1215_k5[:,1]),      np.std(H1215_k4[:,1])])
+ga_fitStd.append(       [np.std(M1215_i3c08[:,1])*(-100),  np.std(M1215_i3c09[:,1])*(-100),   np.std(M1215_i3c095[:,1])*(-100),  np.std(M1215_i3c098[:,1])*(-100),  np.std(M1215_i3c1[:,1])*(-100) ])
+heur_fitStd.append(     [np.std(H1215_k5[:,1])*(-100),     np.std(H1215_k7[:,1])*(-100),      np.std(H1215_k6[:,1])*(-100),      np.std(H1215_k5[:,1])*(-100),      np.std(H1215_k4[:,1])*(-100)   ])
 
 ###   Cenário Brum2025   ###
-exact_fitValues.append( [E2025_i3c08[1],            E2025_i3c09[1],             E2025_i3c095[1],            E2025_i3c098[1],            E2025_i3c1[1]])
-ga_fitMeans.append(     [np.mean(M2025_i3c08[:,1]), np.mean(M2025_i3c09[:,1]),  np.mean(M2025_i3c095[:,1]), np.mean(M2025_i3c098[:,1]), np.mean(M2025_i3c1[:,1])])
-heur_fitMeans.append(   [np.mean(H2025_k6[:,1]),    np.mean(H2025_k6[:,1]),     np.mean(H2025_k7[:,1]),     np.mean(H2025_k7[:,1]),     np.mean(H2025_k6[:,1])])
+exact_fitValues.append( [E2025_i3c08[1]*(-100),            E2025_i3c09[1]*(-100),             E2025_i3c095[1]*(-100),            E2025_i3c098[1]*(-100),            E2025_i3c1[1]*(-100)           ])
+ga_fitMeans.append(     [np.mean(M2025_i3c08[:,1])*(-100), np.mean(M2025_i3c09[:,1])*(-100),  np.mean(M2025_i3c095[:,1])*(-100), np.mean(M2025_i3c098[:,1])*(-100), np.mean(M2025_i3c1[:,1])*(-100)])
+heur_fitMeans.append(   [np.mean(H2025_k6[:,1])*(-100),    np.mean(H2025_k6[:,1])*(-100),     np.mean(H2025_k7[:,1])*(-100),     np.mean(H2025_k7[:,1])*(-100),     np.mean(H2025_k6[:,1])*(-100)  ])
 
-ga_fitStd.append(       [np.std(M2025_i3c08[:,1]),  np.std(M2025_i3c09[:,1]),   np.std(M2025_i3c095[:,1]),  np.std(M2025_i3c098[:,1]),  np.std(M2025_i3c1[:,1])])
-heur_fitStd.append(     [np.std(H2025_k6[:,1]),     np.std(H2025_k6[:,1]),      np.std(H2025_k7[:,1]),      np.std(H2025_k7[:,1]),      np.std(H2025_k6[:,1])])
+ga_fitStd.append(       [np.std(M2025_i3c08[:,1])*(-100),  np.std(M2025_i3c09[:,1])*(-100),   np.std(M2025_i3c095[:,1])*(-100),  np.std(M2025_i3c098[:,1])*(-100),  np.std(M2025_i3c1[:,1])*(-100) ])
+heur_fitStd.append(     [np.std(H2025_k6[:,1])*(-100),     np.std(H2025_k6[:,1])*(-100),      np.std(H2025_k7[:,1])*(-100),      np.std(H2025_k7[:,1])*(-100),      np.std(H2025_k6[:,1])*(-100)   ])
 
 ###   Cenário Brum2430   ###
-exact_fitValues.append( [E2430_i3c08[1],            E2430_i3c09[1],             E2430_i3c095[1],            E2430_i3c098[1],            E2430_i3c1[1]])
-ga_fitMeans.append(     [np.mean(M2430_i3c08[:,1]), np.mean(M2430_i3c09[:,1]),  np.mean(M2430_i3c095[:,1]), np.mean(M2430_i3c098[:,1]), np.mean(M2430_i3c1[:,1])])
-heur_fitMeans.append(   [np.mean(H2430_k8[:,1]),    np.mean(H2430_k5[:,1]),     np.mean(H2430_k6[:,1]),     np.mean(H2430_k6[:,1]),     np.mean(H2430_k6[:,1])])
+exact_fitValues.append( [E2430_i3c08[1]*(-100),            E2430_i3c09[1]*(-100),             E2430_i3c095[1]*(-100),            E2430_i3c098[1]*(-100),            E2430_i3c1[1]*(-100)           ])
+ga_fitMeans.append(     [np.mean(M2430_i3c08[:,1])*(-100), np.mean(M2430_i3c09[:,1])*(-100),  np.mean(M2430_i3c095[:,1])*(-100), np.mean(M2430_i3c098[:,1])*(-100), np.mean(M2430_i3c1[:,1])*(-100)])
+heur_fitMeans.append(   [np.mean(H2430_k8[:,1])*(-100),    np.mean(H2430_k5[:,1])*(-100),     np.mean(H2430_k6[:,1])*(-100),     np.mean(H2430_k6[:,1])*(-100),     np.mean(H2430_k6[:,1])*(-100)  ])
 
-ga_fitStd.append(       [np.std(M2430_i3c08[:,1]),  np.std(M2430_i3c09[:,1]),   np.std(M2430_i3c095[:,1]),  np.std(M2430_i3c098[:,1]),  np.std(M2430_i3c1[:,1])])
-heur_fitStd.append(     [np.std(H2430_k8[:,1]),     np.std(H2430_k5[:,1]),      np.std(H2430_k6[:,1]),      np.std(H2430_k6[:,1]),      np.std(H2430_k6[:,1])])
+ga_fitStd.append(       [np.std(M2430_i3c08[:,1])*(-100),  np.std(M2430_i3c09[:,1])*(-100),   np.std(M2430_i3c095[:,1])*(-100),  np.std(M2430_i3c098[:,1])*(-100),  np.std(M2430_i3c1[:,1])*(-100) ])
+heur_fitStd.append(     [np.std(H2430_k8[:,1])*(-100),     np.std(H2430_k5[:,1])*(-100),      np.std(H2430_k6[:,1])*(-100),      np.std(H2430_k6[:,1])*(-100),      np.std(H2430_k6[:,1])*(-100)   ])
 
 ###   Cenário Brum3645   ###
-exact_fitValues.append( [E3645_i3c08[1],            E3645_i3c09[1],             E3645_i3c095[1],            E3645_i3c098[1],            E3645_i3c1[1]])
-ga_fitMeans.append(     [np.mean(M3645_i3c08[:,1]), np.mean(M3645_i3c09[:,1]),  np.mean(M3645_i3c095[:,1]), np.mean(M3645_i3c098[:,1]), np.mean(M3645_i3c1[:,1])])
-heur_fitMeans.append(   [np.mean(H3645_k5[:,1]),    np.mean(H3645_k7[:,1]),     np.mean(H3645_k6[:,1]),     np.mean(H3645_k6[:,1]),     np.mean(H3645_k7[:,1])])
+exact_fitValues.append( [E3645_i3c08[1]*(-100),            E3645_i3c09[1]*(-100),             E3645_i3c095[1]*(-100),            E3645_i3c098[1]*(-100),            E3645_i3c1[1]*(-100)           ])
+ga_fitMeans.append(     [np.mean(M3645_i3c08[:,1])*(-100), np.mean(M3645_i3c09[:,1])*(-100),  np.mean(M3645_i3c095[:,1])*(-100), np.mean(M3645_i3c098[:,1])*(-100), np.mean(M3645_i3c1[:,1])*(-100)])
+heur_fitMeans.append(   [np.mean(H3645_k5[:,1])*(-100),    np.mean(H3645_k7[:,1])*(-100),     np.mean(H3645_k6[:,1])*(-100),     np.mean(H3645_k6[:,1])*(-100),     np.mean(H3645_k7[:,1])*(-100)  ])
 
-ga_fitStd.append(       [np.std(M3645_i3c08[:,1]),  np.std(M3645_i3c09[:,1]),   np.std(M3645_i3c095[:,1]),  np.std(M3645_i3c098[:,1]),  np.std(M3645_i3c1[:,1])])
-heur_fitStd.append(     [np.std(H3645_k5[:,1]),     np.std(H3645_k7[:,1]),      np.std(H3645_k6[:,1]),      np.std(H3645_k6[:,1]),      np.std(H3645_k7[:,1])])
+ga_fitStd.append(       [np.std(M3645_i3c08[:,1])*(-100),  np.std(M3645_i3c09[:,1])*(-100),   np.std(M3645_i3c095[:,1])*(-100),  np.std(M3645_i3c098[:,1])*(-100),  np.std(M3645_i3c1[:,1])*(-100) ])
+heur_fitStd.append(     [np.std(H3645_k5[:,1])*(-100),     np.std(H3645_k7[:,1])*(-100),      np.std(H3645_k6[:,1])*(-100),      np.std(H3645_k6[:,1])*(-100),      np.std(H3645_k7[:,1])*(-100)   ])
 
 
 fig, axs = plt.subplots(1, 4, sharey=True)
@@ -485,7 +486,12 @@ axs[1].set_title(cenarios[1])
 axs[2].set_title(cenarios[2])
 axs[3].set_title(cenarios[3])
 
-axs[0].set_ylabel('Interference')
+axs[0].set_ylim([0, 60])
+axs[1].set_ylim([0, 60])
+axs[2].set_ylim([0, 60])
+axs[3].set_ylim([0, 60])
+
+axs[0].set_ylabel('Degree of Overlap (%)')
 
 # add a big axis, hide frame
 fig.add_subplot(111, frameon=False)
@@ -503,7 +509,7 @@ plt.show()
 #############################################################################
 ###   Gráfico [Número de eNodeBs x Consenso de Cobertura] (por cenário)   ###
 #############################################################################
-x = [0.8, 0.9, 0.95, 0.98, 1]
+x = [80, 90, 95, 98, 100]
 cenarios = ['Brum1215', 'Brum2025', 'Brum2430', 'Brum3645']
 exact_NreNBs = []
 ga_NreNBsMeans = []
@@ -514,51 +520,51 @@ heur_NreNBsStd =[]
 ###   Cenário Brum1215   ###
 exact_NreNBs.append(       [E1215_i3c08[2],            E1215_i3c09[2],             E1215_i3c095[2],            E1215_i3c098[2],            E1215_i3c1[2]])
 ga_NreNBsMeans.append(     [np.mean(M1215_i3c08[:,2]), np.mean(M1215_i3c09[:,2]),  np.mean(M1215_i3c095[:,2]), np.mean(M1215_i3c098[:,2]), np.mean(M1215_i3c1[:,2])])
-heur_NreNBsMeans.append(   [np.mean(H1215_k5[:,2]),    np.mean(H1215_k7[:,2]),     np.mean(H1215_k6[:,2]),     np.mean(H1215_k5[:,2]),     np.mean(H1215_k4[:,2])])
+#heur_NreNBsMeans.append(   [np.mean(H1215_k5[:,2]),    np.mean(H1215_k7[:,2]),     np.mean(H1215_k6[:,2]),     np.mean(H1215_k5[:,2]),     np.mean(H1215_k4[:,2])])
 
 ga_NreNBsStd.append(       [np.std(M1215_i3c08[:,2]),  np.std(M1215_i3c09[:,2]),   np.std(M1215_i3c095[:,2]),  np.std(M1215_i3c098[:,2]),  np.std(M1215_i3c1[:,2])])
-heur_NreNBsStd.append(     [np.std(H1215_k5[:,2]),     np.std(H1215_k7[:,2]),      np.std(H1215_k6[:,2]),      np.std(H1215_k5[:,2]),      np.std(H1215_k4[:,2])])
+#heur_NreNBsStd.append(     [np.std(H1215_k5[:,2]),     np.std(H1215_k7[:,2]),      np.std(H1215_k6[:,2]),      np.std(H1215_k5[:,2]),      np.std(H1215_k4[:,2])])
 
 ###   Cenário Brum2025   ###
 exact_NreNBs.append(       [E2025_i3c08[2],            E2025_i3c09[2],             E2025_i3c095[2],            E2025_i3c098[2],            E2025_i3c1[2]])
 ga_NreNBsMeans.append(     [np.mean(M2025_i3c08[:,2]), np.mean(M2025_i3c09[:,2]),  np.mean(M2025_i3c095[:,2]), np.mean(M2025_i3c098[:,2]), np.mean(M2025_i3c1[:,2])])
-heur_NreNBsMeans.append(   [np.mean(H2025_k6[:,2]),    np.mean(H2025_k6[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k6[:,2])])
+#heur_NreNBsMeans.append(   [np.mean(H2025_k6[:,2]),    np.mean(H2025_k6[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k7[:,2]),     np.mean(H2025_k6[:,2])])
 
 ga_NreNBsStd.append(       [np.std(M2025_i3c08[:,2]),  np.std(M2025_i3c09[:,2]),   np.std(M2025_i3c095[:,2]),  np.std(M2025_i3c098[:,2]),  np.std(M2025_i3c1[:,2])])
-heur_NreNBsStd.append(     [np.std(H2025_k6[:,2]),     np.std(H2025_k6[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k6[:,2])])
+#heur_NreNBsStd.append(     [np.std(H2025_k6[:,2]),     np.std(H2025_k6[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k7[:,2]),      np.std(H2025_k6[:,2])])
 
 ###   Cenário Brum2430   ###
 exact_NreNBs.append(       [E2430_i3c08[2],            E2430_i3c09[2],             E2430_i3c095[2],            E2430_i3c098[2],            E2430_i3c1[2]])
 ga_NreNBsMeans.append(     [np.mean(M2430_i3c08[:,2]), np.mean(M2430_i3c09[:,2]),  np.mean(M2430_i3c095[:,2]), np.mean(M2430_i3c098[:,2]), np.mean(M2430_i3c1[:,2])])
-heur_NreNBsMeans.append(   [np.mean(H2430_k8[:,2]),    np.mean(H2430_k5[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2])])
+#heur_NreNBsMeans.append(   [np.mean(H2430_k8[:,2]),    np.mean(H2430_k5[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2]),     np.mean(H2430_k6[:,2])])
 
 ga_NreNBsStd.append(       [np.std(M2430_i3c08[:,2]),  np.std(M2430_i3c09[:,2]),   np.std(M2430_i3c095[:,2]),  np.std(M2430_i3c098[:,2]),  np.std(M2430_i3c1[:,2])])
-heur_NreNBsStd.append(     [np.std(H2430_k8[:,2]),     np.std(H2430_k5[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2])])
+#heur_NreNBsStd.append(     [np.std(H2430_k8[:,2]),     np.std(H2430_k5[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2]),      np.std(H2430_k6[:,2])])
 
 ###   Cenário Brum3645   ###
 exact_NreNBs.append(       [E3645_i3c08[2],            E3645_i3c09[2],             E3645_i3c095[2],            E3645_i3c098[2],            E3645_i3c1[2]])
 ga_NreNBsMeans.append(     [np.mean(M3645_i3c08[:,2]), np.mean(M3645_i3c09[:,2]),  np.mean(M3645_i3c095[:,2]), np.mean(M3645_i3c098[:,2]), np.mean(M3645_i3c1[:,2])])
-heur_NreNBsMeans.append(   [np.mean(H3645_k5[:,2]),    np.mean(H3645_k7[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k7[:,2])])
+#heur_NreNBsMeans.append(   [np.mean(H3645_k5[:,2]),    np.mean(H3645_k7[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k6[:,2]),     np.mean(H3645_k7[:,2])])
 
 ga_NreNBsStd.append(       [np.std(M3645_i3c08[:,2]),  np.std(M3645_i3c09[:,2]),   np.std(M3645_i3c095[:,2]),  np.std(M3645_i3c098[:,2]),  np.std(M3645_i3c1[:,2])])
-heur_NreNBsStd.append(     [np.std(H3645_k5[:,2]),     np.std(H3645_k7[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k7[:,2])])
+#heur_NreNBsStd.append(     [np.std(H3645_k5[:,2]),     np.std(H3645_k7[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k6[:,2]),      np.std(H3645_k7[:,2])])
 
 fig, axs = plt.subplots(1, 4, sharey=True)
 axs[0].plot(x, exact_NreNBs[0], marker='s', color='r', label="E-ALLOCATOR")
 axs[0].errorbar(x, ga_NreNBsMeans[0],     ga_NreNBsStd[0],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
-axs[0].errorbar(x, heur_NreNBsMeans[0],   heur_NreNBsStd[0], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+#axs[0].errorbar(x, heur_NreNBsMeans[0],   heur_NreNBsStd[0], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
 
 axs[1].plot(x, exact_NreNBs[1], marker='s', color='r', label="E-ALLOCATOR")
 axs[1].errorbar(x, ga_NreNBsMeans[1],     ga_NreNBsStd[1],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
-axs[1].errorbar(x, heur_NreNBsMeans[1],   heur_NreNBsStd[1], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+#axs[1].errorbar(x, heur_NreNBsMeans[1],   heur_NreNBsStd[1], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
 
 axs[2].plot(x, exact_NreNBs[2], marker='s', color='r', label="E-ALLOCATOR")
 axs[2].errorbar(x, ga_NreNBsMeans[2],     ga_NreNBsStd[2],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
-axs[2].errorbar(x, heur_NreNBsMeans[2],   heur_NreNBsStd[2], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+#axs[2].errorbar(x, heur_NreNBsMeans[2],   heur_NreNBsStd[2], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
 
 axs[3].plot(x, exact_NreNBs[3], marker='s', color='r', label="E-ALLOCATOR")
 axs[3].errorbar(x, ga_NreNBsMeans[3],     ga_NreNBsStd[3],   color='b',  fmt='o', ls=':', capsize=8, markersize=7, markerfacecolor='w', capthick=2, label="M-ALLOCATOR")
-axs[3].errorbar(x, heur_NreNBsMeans[3],   heur_NreNBsStd[3], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
+#axs[3].errorbar(x, heur_NreNBsMeans[3],   heur_NreNBsStd[3], color='y',  fmt='P', ls='-.', capsize=5, markersize=8, markerfacecolor='w', label="Heuristic")
 
 axs[0].grid(alpha=0.4)
 axs[1].grid(alpha=0.4)
@@ -570,6 +576,11 @@ axs[0].set_title(cenarios[0])
 axs[1].set_title(cenarios[1])
 axs[2].set_title(cenarios[2])
 axs[3].set_title(cenarios[3])
+
+axs[0].set_ylim([0, 10])
+axs[1].set_ylim([0, 10])
+axs[2].set_ylim([0, 10])
+axs[3].set_ylim([0, 10])
 
 axs[0].set_ylabel('Number of eNodeBs deployed')
 
@@ -589,7 +600,7 @@ plt.show()
 #############################################################################
 ###   Gráfico [Área Coberta x Consenso de Cobertura] (por cenário)   ###
 #############################################################################
-x = [0.8, 0.9, 0.95, 0.98, 1]
+x = [80, 90, 95, 98, 100]
 cenarios = ['Brum1215', 'Brum2025', 'Brum2430', 'Brum3645']
 exact_Area = []
 ga_AreaMeans = []
@@ -656,6 +667,11 @@ axs[0].set_title(cenarios[0])
 axs[1].set_title(cenarios[1])
 axs[2].set_title(cenarios[2])
 axs[3].set_title(cenarios[3])
+
+axs[0].set_ylim([0, 30])
+axs[1].set_ylim([0, 30])
+axs[2].set_ylim([0, 30])
+axs[3].set_ylim([0, 30])
 
 axs[0].set_ylabel('Coverage Area (km\u00b2)')
 
