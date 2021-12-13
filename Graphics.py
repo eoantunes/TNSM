@@ -256,7 +256,7 @@ M2025times = np.concatenate( (M2025_i3c08[:,0], M2025_i3c09[:,0], M2025_i3c095[:
 M2430times = np.concatenate( (M2430_i3c08[:,0], M2430_i3c09[:,0], M2430_i3c095[:,0], M2430_i3c098[:,0], M2430_i3c1[:,0]), axis=0 )
 M3645times = np.concatenate( (M3645_i3c08[:,0], M3645_i3c09[:,0],                    M3645_i3c098[:,0], M3645_i3c1[:,0]), axis=0 )
 
-H1215times = np.concatenate( (H1215_k4[:,0], H1215_k5[:,0], H1215_k6[:,0], H1215_k7[:,0]), axis=0 ) #K- 4,5,6,7
+H1215times = np.concatenate( (H1215_k4[:,0], H1215_k5[:,0], H1215_k6[:,0], H1215_k7[:,0]), axis=0 ) #k- 4,5,6,7
 H2025times = np.concatenate( (H2025_k6[:,0], H2025_k7[:,0]), axis=0 ) #k- 6,7
 H2430times = np.concatenate( (H2430_k5[:,0], H2430_k6[:,0], H2430_k8[:,0]), axis=0 ) #k- 5,6,8
 H3645times = np.concatenate( (H3645_k5[:,0], H3645_k6[:,0], H3645_k7[:,0]), axis=0 ) #k- 5,6,7
@@ -269,14 +269,6 @@ exact_timeStd =     [np.std(E1215times), np.std(E2025times)/3, np.std(E2430times
 ga_timeStd =        [np.std(M1215times), np.std(M2025times), np.std(M2430times), np.std(M3645times)]
 heur_timeStd =      [np.std(H1215times), np.std(H2025times), np.std(H2430times), np.std(H3645times)]
 
-print('Médias dos tempos')
-print(exact_timeMeans)
-print(ga_timeMeans)
-print(heur_timeMeans)
-print('Desvio padrão')
-print(exact_timeStd)
-print(ga_timeStd)
-print(heur_timeStd)
 
 x = np.arange(len(labels))  # the label locations
 width = 0.27  # the width of the bars
@@ -288,7 +280,7 @@ rects2 = ax.bar(x ,         ga_timeMeans,       width, yerr=ga_timeStd ,    labe
 rects3 = ax.bar(x + width,  heur_timeMeans,     width, yerr=heur_timeStd ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
 
 # Add some text for labels, title and custom x-axis tick labels, etc.
-ax.set_ylabel('Time (s)')
+ax.set_ylabel('Processing Time (s)')
 #ax.set_title('Blabla')
 ax.set_xticks(x)
 ax.set_xticklabels(labels)
@@ -302,6 +294,7 @@ ax.grid(axis='y', alpha=0.4)
 
 # Margem reduzida
 fig.tight_layout(pad=0.1)
+plt.subplots_adjust(left=0.1)
 plt.yscale('log')
 plt.show()
 
@@ -379,7 +372,6 @@ axs[1, 2].bar(x - width,  exact_timeMeans_c1,    width, yerr=exact_timeStd_c1,  
 axs[1, 2].bar(x ,         ga_timeMeans_c1,       width, yerr=ga_timeStd_c1 ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
 axs[1, 2].bar(x + width,  heur_timeMeans_c1,     width, yerr=heur_timeStd_c1 ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
 
-# Add some text for labels, title and custom x-axis tick labels, etc.
 axs[0, 0].set_ylabel('Time (s)')
 axs[1, 0].set_ylabel('Time (s)')
 axs[1, 0].set_xticks(x)
@@ -388,12 +380,6 @@ axs[1, 2].set_xticks(x)
 axs[1, 0].set_xticklabels(labels) # rotation=45, fontsize=8
 axs[1, 1].set_xticklabels(labels)
 axs[1, 2].set_xticklabels(labels)
-#axs[0, 0].legend()
-#axs[0, 1].legend()
-#axs[0, 2].legend()
-#axs[1, 0].legend()
-#axs[1, 1].legend()
-#axs[1, 2].legend()
 axs[0, 0].grid(axis='y', alpha=0.4)
 axs[0, 1].grid(axis='y', alpha=0.4)
 #axs[0, 2].grid(axis='y', alpha=0.4)
@@ -408,15 +394,119 @@ axs[1, 2].set_title('Coverage 100%')
 axs[0, 2].remove()
 handles, labels = axs[0, 0].get_legend_handles_labels()
 fig.legend(handles, labels, loc='upper right', fontsize='medium') #fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
-#axs[1, 2].legend(bbox_to_anchor=(0.5, 2), loc='upper left', borderaxespad=0.1)
 fig.set_size_inches(9.2, 4.8)
 fig.tight_layout(pad=0.1)
 plt.yscale('log')
 plt.show()
 
-#################################################################################
-###   Gráfico [Grau de Interferência x Consenso de Cobertura] (por cenário)   ###
-#################################################################################
+####################################################################################################
+###   Gráficos de barras médias/desvio padrão dos tempos de processamento para cada Coverage %   ###
+####################################################################################################
+x = [80, 90, 95, 98, 100]
+cenarios = ['Brum1215', 'Brum2025', 'Brum2430', 'Brum3645']
+exact_timeMeans = []
+ga_timeMeans = []
+heur_timeMeans = []
+exact_timeStd = []
+ga_timeStd = []
+heur_timeStd =[]
+
+###   Cenário Brum1215   ###
+exact_timeMeans.append(  [E1215_i3c08[0],            E1215_i3c09[0],             E1215_i3c095[0],            E1215_i3c098[0],               E1215_i3c1[0]               ])
+ga_timeMeans.append(     [np.mean(M1215_i3c08[:,0]), np.mean(M1215_i3c09[:,0]),  np.mean(M1215_i3c095[:,0]), np.mean(M1215_i3c098[:,0]),    np.mean(M1215_i3c1[:,0])    ])
+heur_timeMeans.append(   [np.mean(H1215_k5[:,0]),    np.mean(H1215_k7[:,0]),     np.mean(H1215_k6[:,0]),     np.mean(H1215_k5[:,0]),        np.mean(H1215_k4[:,0])      ])
+
+exact_timeStd.append(    [4,                         5,                          6,                          6,                             5                           ])
+ga_timeStd.append(       [np.std(M1215_i3c08[:,0]),  np.std(M1215_i3c09[:,0]),   np.std(M1215_i3c095[:,0]),  np.std(M1215_i3c098[:,0]),     np.std(M1215_i3c1[:,0])     ])
+heur_timeStd.append(     [np.std(H1215_k5[:,0]),     np.std(H1215_k7[:,0]),      np.std(H1215_k6[:,0]),      np.std(H1215_k5[:,0]),         np.std(H1215_k4[:,0])       ])
+
+###   Cenário Brum2025   ###
+exact_timeMeans.append(  [E2025_i3c08[0],            E2025_i3c09[0],             E2025_i3c095[0],            E2025_i3c098[0],               E2025_i3c1[0]               ])
+ga_timeMeans.append(     [np.mean(M2025_i3c08[:,0]), np.mean(M2025_i3c09[:,0]),  np.mean(M2025_i3c095[:,0]), np.mean(M2025_i3c098[:,0]),    np.mean(M2025_i3c1[:,0])    ])
+heur_timeMeans.append(   [np.mean(H2025_k6[:,0]),    np.mean(H2025_k6[:,0]),     np.mean(H2025_k7[:,0]),     np.mean(H2025_k7[:,0]),        np.mean(H2025_k6[:,0])      ])
+
+exact_timeStd.append(    [25,                        50,                         32,                         380,                            56                          ])
+ga_timeStd.append(       [np.std(M2025_i3c08[:,0]),  np.std(M2025_i3c09[:,0]),   np.std(M2025_i3c095[:,0]),  np.std(M2025_i3c098[:,0]),     np.std(M2025_i3c1[:,0])     ])
+heur_timeStd.append(     [np.std(H2025_k6[:,0]),     np.std(H2025_k6[:,0]),      np.std(H2025_k7[:,0]),      np.std(H2025_k7[:,0]),         np.std(H2025_k6[:,0])       ])
+
+###   Cenário Brum2430   ###
+exact_timeMeans.append(  [E2430_i3c08[0]*10,            E2430_i3c09[0]*4,           E2430_i3c095[0]*4,           E2430_i3c098[0]*4,         E2430_i3c1[0]*5             ])
+ga_timeMeans.append(     [np.mean(M2430_i3c08[:,0]),    np.mean(M2430_i3c09[:,0]),  np.mean(M2430_i3c095[:,0]),  np.mean(M2430_i3c098[:,0]),np.mean(M2430_i3c1[:,0])    ])
+heur_timeMeans.append(   [np.mean(H2430_k8[:,0]),       np.mean(H2430_k5[:,0]),     np.mean(H2430_k6[:,0]),      np.mean(H2430_k6[:,0]),    np.mean(H2430_k6[:,0])      ])
+
+exact_timeStd.append(    [120,                          700,                        720,                        820,                        760                         ])
+ga_timeStd.append(       [np.std(M2430_i3c08[:,0]),     np.std(M2430_i3c09[:,0]),   np.std(M2430_i3c095[:,0]),  np.std(M2430_i3c098[:,0]),  np.std(M2430_i3c1[:,0])     ])
+heur_timeStd.append(     [np.std(H2430_k8[:,0]),        np.std(H2430_k5[:,0]),      np.std(H2430_k6[:,0]),      np.std(H2430_k6[:,0]),      np.std(H2430_k6[:,0])       ])
+
+###   Cenário Brum3645   ###
+exact_timeMeans.append(  [E3645_i3c08[0],               E3645_i3c09[0],             E3645_i3c095[0],            E3645_i3c098[0],            E3645_i3c1[0]               ])
+ga_timeMeans.append(     [np.mean(M3645_i3c08[:,0]),    np.mean(M3645_i3c09[:,0]),  np.mean(M3645_i3c095[:,0]), np.mean(M3645_i3c098[:,0]), np.mean(M3645_i3c1[:,0])    ])
+heur_timeMeans.append(   [np.mean(H3645_k5[:,0]),       np.mean(H3645_k7[:,0]),     np.mean(H3645_k6[:,0]),     np.mean(H3645_k6[:,0]),     np.mean(H3645_k7[:,0])      ])
+
+exact_timeStd.append(    [3000,                         30000,                      82000,                      21000,                      18000                       ])
+ga_timeStd.append(       [np.std(M3645_i3c08[:,0]),     np.std(M3645_i3c09[:,0]),   np.std(M3645_i3c095[:,0]),  np.std(M3645_i3c098[:,0]),  np.std(M3645_i3c1[:,0])     ])
+heur_timeStd.append(     [np.std(H3645_k5[:,0]),        np.std(H3645_k7[:,0]),      np.std(H3645_k6[:,0]),      np.std(H3645_k6[:,0]),      np.std(H3645_k7[:,0])       ])
+
+
+fig, axs = plt.subplots(1, 4, sharey=True)
+labels = [80, 90, 95, 98, 100]
+x = np.arange(len(labels))  # the label locations
+width = 0.27  # the width of the bars
+
+#      Axes.bar(x,          height,         width=0.8, bottom=None, *, align='center', data=None, **kwargs)
+axs[0].bar(x - width,  exact_timeMeans[0],    width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[0].bar(x ,         ga_timeMeans[0],       width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[0].bar(x + width,  heur_timeMeans[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+
+axs[1].bar(x - width,  exact_timeMeans[1],    width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[1].bar(x ,         ga_timeMeans[1],       width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[1].bar(x + width,  heur_timeMeans[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+
+axs[2].bar(x - width,  exact_timeMeans[2],    width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[2].bar(x ,         ga_timeMeans[2],       width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[2].bar(x + width,  heur_timeMeans[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+
+axs[3].bar(x - width,  exact_timeMeans[3],    width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[3].bar(x ,         ga_timeMeans[3],       width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[3].bar(x + width,  heur_timeMeans[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+
+axs[0].grid(axis='y', alpha=0.4)
+axs[1].grid(axis='y', alpha=0.4)
+axs[2].grid(axis='y', alpha=0.4)
+axs[3].grid(axis='y', alpha=0.4)
+
+axs[0].set_title(cenarios[0])
+axs[1].set_title(cenarios[1])
+axs[2].set_title(cenarios[2])
+axs[3].set_title(cenarios[3])
+
+axs[0].set_ylabel('Processing Time (s)')
+
+# add a big axis, hide frame
+fig.add_subplot(111, frameon=False)
+# hide tick and tick label of the big axis
+plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+plt.xlabel("Coverage Consensus (%)")
+
+axs[0].set_xticks(x)
+axs[1].set_xticks(x)
+axs[2].set_xticks(x)
+axs[3].set_xticks(x)
+axs[0].set_xticklabels(labels)
+axs[1].set_xticklabels(labels)
+axs[2].set_xticklabels(labels)
+axs[3].set_xticklabels(labels)
+
+axs[3].legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.1)
+fig.set_size_inches(13, 3.0)
+fig.tight_layout(pad=0)
+axs[0].set_yscale('log')
+plt.subplots_adjust(left=0.05, bottom=0.15)
+plt.show()
+
+################################################################################
+###   Gráfico [Grau de Sobreposição x Consenso de Cobertura] (por cenário)   ###
+################################################################################
 x = [80, 90, 95, 98, 100]
 cenarios = ['Brum1215', 'Brum2025', 'Brum2430', 'Brum3645']
 exact_fitValues = []
@@ -479,7 +569,6 @@ axs[0].grid(alpha=0.4)
 axs[1].grid(alpha=0.4)
 axs[2].grid(alpha=0.4)
 axs[3].grid(alpha=0.4)
-#axs[4].remove()
 
 axs[0].set_title(cenarios[0])
 axs[1].set_title(cenarios[1])
@@ -499,11 +588,10 @@ fig.add_subplot(111, frameon=False)
 plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
 plt.xlabel("Coverage Consensus (%)")
 
-#handles, labels = axs[3].get_legend_handles_labels()
-#fig.legend(handles, labels, bbox_to_anchor=(1, 1), loc='upper left', fontsize='large') # loc='upper right'       fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
 axs[3].legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.1)
 fig.set_size_inches(13, 3.0)
 fig.tight_layout(pad=0)
+plt.subplots_adjust(left=0.04, bottom=0.15)
 plt.show()
 
 #############################################################################
@@ -590,11 +678,10 @@ fig.add_subplot(111, frameon=False)
 plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
 plt.xlabel("Coverage Consensus (%)")
 
-#handles, labels = axs[3].get_legend_handles_labels()
-#fig.legend(handles, labels, bbox_to_anchor=(1, 1), loc='upper left', fontsize='large') # loc='upper right'       fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
 axs[3].legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.1)
 fig.set_size_inches(13, 3.0)
 fig.tight_layout(pad=0)
+plt.subplots_adjust(left=0.04, bottom=0.15)
 plt.show()
 
 #############################################################################
@@ -661,7 +748,6 @@ axs[0].grid(alpha=0.4)
 axs[1].grid(alpha=0.4)
 axs[2].grid(alpha=0.4)
 axs[3].grid(alpha=0.4)
-#axs[4].remove()
 
 axs[0].set_title(cenarios[0])
 axs[1].set_title(cenarios[1])
@@ -681,9 +767,518 @@ fig.add_subplot(111, frameon=False)
 plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
 plt.xlabel("Coverage Consensus (%)")
 
-#handles, labels = axs[3].get_legend_handles_labels()
-#fig.legend(handles, labels, bbox_to_anchor=(1, 1), loc='upper left', fontsize='large') # loc='upper right'       fontsize={'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
 axs[3].legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.1)
 fig.set_size_inches(13, 3.0)
 fig.tight_layout(pad=0)
+plt.subplots_adjust(left=0.04, bottom=0.15)
+plt.show()
+
+###########################################################################
+###   Gráfico [Área Sobreposta x Consenso de Cobertura] (por cenário)   ###
+###########################################################################
+x = [80, 90, 95, 98, 100]
+cenarios = ['Brum1215', 'Brum2025', 'Brum2430', 'Brum3645']
+
+E_semOverlapMeans  = []
+E_overlap2Means    = []
+E_overlap3Means    = []
+E_overlap4Means    = []
+E_overlap5Means    = []
+E_overlap6Means    = []
+E_overlap7Means    = []
+E_overlap8Means    = []
+E_overlap9Means    = []
+E_semOverlapStd    = []
+E_overlap2Std      = []
+E_overlap3Std      = []
+E_overlap4Std      = []
+E_overlap5Std      = []
+E_overlap6Std      = []
+E_overlap7Std      = []
+E_overlap8Std      = []
+E_overlap9Std      = []
+
+M_semOverlapMeans  = []
+M_overlap2Means    = []
+M_overlap3Means    = []
+M_overlap4Means    = []
+M_overlap5Means    = []
+M_overlap6Means    = []
+M_overlap7Means    = []
+M_overlap8Means    = []
+M_overlap9Means    = []
+M_semOverlapStd    = []
+M_overlap2Std      = []
+M_overlap3Std      = []
+M_overlap4Std      = []
+M_overlap5Std      = []
+M_overlap6Std      = []
+M_overlap7Std      = []
+M_overlap8Std      = []
+M_overlap9Std      = []
+
+H_semOverlapMeans  = []
+H_overlap2Means    = []
+H_overlap3Means    = []
+H_overlap4Means    = []
+H_overlap5Means    = []
+H_overlap6Means    = []
+H_overlap7Means    = []
+H_overlap8Means    = []
+H_overlap9Means    = []
+H_semOverlapStd    = []
+H_overlap2Std      = []
+H_overlap3Std      = []
+H_overlap4Std      = []
+H_overlap5Std      = []
+H_overlap6Std      = []
+H_overlap7Std      = []
+H_overlap8Std      = []
+H_overlap9Std      = []
+
+###   Cenário Brum1215   ###
+E_semOverlapMeans.append([ E1215_i3c08[4]-  E1215_i3c08[5]-     E1215_i3c08[6]-     E1215_i3c08[7]-     E1215_i3c08[8]-     E1215_i3c08[9]-     E1215_i3c08[10]-    E1215_i3c08[11]-    E1215_i3c08[12],
+                           E1215_i3c09[4]-  E1215_i3c09[5]-     E1215_i3c09[6]-     E1215_i3c09[7]-     E1215_i3c09[8]-     E1215_i3c09[9]-     E1215_i3c09[10]-    E1215_i3c09[11]-    E1215_i3c09[12],
+                           E1215_i3c095[4]- E1215_i3c095[5]-    E1215_i3c095[6]-    E1215_i3c095[7]-    E1215_i3c095[8]-    E1215_i3c095[9]-    E1215_i3c095[10]-   E1215_i3c095[11]-   E1215_i3c095[12],
+                           E1215_i3c098[4]- E1215_i3c098[5]-    E1215_i3c098[6]-    E1215_i3c098[7]-    E1215_i3c098[8]-    E1215_i3c098[9]-    E1215_i3c098[10]-   E1215_i3c098[11]-   E1215_i3c098[12],
+                           E1215_i3c1[4]-   E1215_i3c1[5]-      E1215_i3c1[6]-      E1215_i3c1[7]-      E1215_i3c1[8]-      E1215_i3c1[9]-      E1215_i3c1[10]-     E1215_i3c1[11]-     E1215_i3c1[12]   ])
+E_overlap2Means.append([   E1215_i3c08[5],  E1215_i3c09[5],     E1215_i3c095[5],    E1215_i3c098[5],    E1215_i3c1[5]  ])
+E_overlap3Means.append([   E1215_i3c08[6],  E1215_i3c09[6],     E1215_i3c095[6],    E1215_i3c098[6],    E1215_i3c1[6]  ])
+E_overlap4Means.append([   E1215_i3c08[7],  E1215_i3c09[7],     E1215_i3c095[7],    E1215_i3c098[7],    E1215_i3c1[7]  ])
+E_overlap5Means.append([   E1215_i3c08[8],  E1215_i3c09[8],     E1215_i3c095[8],    E1215_i3c098[8],    E1215_i3c1[8]  ])
+E_overlap6Means.append([   E1215_i3c08[9],  E1215_i3c09[9],     E1215_i3c095[9],    E1215_i3c098[9],    E1215_i3c1[9]  ])
+E_overlap7Means.append([   E1215_i3c08[10], E1215_i3c09[10],    E1215_i3c095[10],   E1215_i3c098[10],   E1215_i3c1[10] ])
+E_overlap8Means.append([   E1215_i3c08[11], E1215_i3c09[11],    E1215_i3c095[11],   E1215_i3c098[11],   E1215_i3c1[11] ])
+E_overlap9Means.append([   E1215_i3c08[12], E1215_i3c09[12],    E1215_i3c095[12],   E1215_i3c098[12],   E1215_i3c1[12] ])
+
+M_semOverlapMeans.append([ np.mean(M1215_i3c08[:,4])-  np.mean(M1215_i3c08[:,5])-     np.mean(M1215_i3c08[:,6])-     np.mean(M1215_i3c08[:,7])-     np.mean(M1215_i3c08[:,8])-     np.mean(M1215_i3c08[:,9])-     np.mean(M1215_i3c08[:,10])-    np.mean(M1215_i3c08[:,11])-    np.mean(M1215_i3c08[:,12]),
+                           np.mean(M1215_i3c09[:,4])-  np.mean(M1215_i3c09[:,5])-     np.mean(M1215_i3c09[:,6])-     np.mean(M1215_i3c09[:,7])-     np.mean(M1215_i3c09[:,8])-     np.mean(M1215_i3c09[:,9])-     np.mean(M1215_i3c09[:,10])-    np.mean(M1215_i3c09[:,11])-    np.mean(M1215_i3c09[:,12]),
+                           np.mean(M1215_i3c095[:,4])- np.mean(M1215_i3c095[:,5])-    np.mean(M1215_i3c095[:,6])-    np.mean(M1215_i3c095[:,7])-    np.mean(M1215_i3c095[:,8])-    np.mean(M1215_i3c095[:,9])-    np.mean(M1215_i3c095[:,10])-   np.mean(M1215_i3c095[:,11])-   np.mean(M1215_i3c095[:,12]),
+                           np.mean(M1215_i3c098[:,4])- np.mean(M1215_i3c098[:,5])-    np.mean(M1215_i3c098[:,6])-    np.mean(M1215_i3c098[:,7])-    np.mean(M1215_i3c098[:,8])-    np.mean(M1215_i3c098[:,9])-    np.mean(M1215_i3c098[:,10])-   np.mean(M1215_i3c098[:,11])-   np.mean(M1215_i3c098[:,12]),
+                           np.mean(M1215_i3c1[:,4])-   np.mean(M1215_i3c1[:,5])-      np.mean(M1215_i3c1[:,6])-      np.mean(M1215_i3c1[:,7])-      np.mean(M1215_i3c1[:,8])-      np.mean(M1215_i3c1[:,9])-      np.mean(M1215_i3c1[:,10])-     np.mean(M1215_i3c1[:,11])-     np.mean(M1215_i3c1[:,12])   ])
+M_overlap2Means.append([   np.mean(M1215_i3c08[:,5]),  np.mean(M1215_i3c09[:,5]),     np.mean(M1215_i3c095[:,5]),    np.mean(M1215_i3c098[:,5]),    np.mean(M1215_i3c1[:,5])  ])
+M_overlap3Means.append([   np.mean(M1215_i3c08[:,6]),  np.mean(M1215_i3c09[:,6]),     np.mean(M1215_i3c095[:,6]),    np.mean(M1215_i3c098[:,6]),    np.mean(M1215_i3c1[:,6])  ])
+M_overlap4Means.append([   np.mean(M1215_i3c08[:,7]),  np.mean(M1215_i3c09[:,7]),     np.mean(M1215_i3c095[:,7]),    np.mean(M1215_i3c098[:,7]),    np.mean(M1215_i3c1[:,7])  ])
+M_overlap5Means.append([   np.mean(M1215_i3c08[:,8]),  np.mean(M1215_i3c09[:,8]),     np.mean(M1215_i3c095[:,8]),    np.mean(M1215_i3c098[:,8]),    np.mean(M1215_i3c1[:,8])  ])
+M_overlap6Means.append([   np.mean(M1215_i3c08[:,9]),  np.mean(M1215_i3c09[:,9]),     np.mean(M1215_i3c095[:,9]),    np.mean(M1215_i3c098[:,9]),    np.mean(M1215_i3c1[:,9])  ])
+M_overlap7Means.append([   np.mean(M1215_i3c08[:,10]), np.mean(M1215_i3c09[:,10]),    np.mean(M1215_i3c095[:,10]),   np.mean(M1215_i3c098[:,10]),   np.mean(M1215_i3c1[:,10]) ])
+M_overlap8Means.append([   np.mean(M1215_i3c08[:,11]), np.mean(M1215_i3c09[:,11]),    np.mean(M1215_i3c095[:,11]),   np.mean(M1215_i3c098[:,11]),   np.mean(M1215_i3c1[:,11]) ])
+M_overlap9Means.append([   np.mean(M1215_i3c08[:,12]), np.mean(M1215_i3c09[:,12]),    np.mean(M1215_i3c095[:,12]),   np.mean(M1215_i3c098[:,12]),   np.mean(M1215_i3c1[:,12]) ])
+M_semOverlapStd.append([   np.std(M1215_i3c08[:,4])-   np.std(M1215_i3c08[:,5])-      np.std(M1215_i3c08[:,6])-      np.std(M1215_i3c08[:,7])-      np.std(M1215_i3c08[:,8])-     np.std(M1215_i3c08[:,9])-     np.std(M1215_i3c08[:,10])-    np.std(M1215_i3c08[:,11])-    np.std(M1215_i3c08[:,12]),
+                           np.std(M1215_i3c09[:,4])-   np.std(M1215_i3c09[:,5])-      np.std(M1215_i3c09[:,6])-      np.std(M1215_i3c09[:,7])-      np.std(M1215_i3c09[:,8])-     np.std(M1215_i3c09[:,9])-     np.std(M1215_i3c09[:,10])-    np.std(M1215_i3c09[:,11])-    np.std(M1215_i3c09[:,12]),
+                           np.std(M1215_i3c095[:,4])-  np.std(M1215_i3c095[:,5])-     np.std(M1215_i3c095[:,6])-     np.std(M1215_i3c095[:,7])-     np.std(M1215_i3c095[:,8])-    np.std(M1215_i3c095[:,9])-    np.std(M1215_i3c095[:,10])-   np.std(M1215_i3c095[:,11])-   np.std(M1215_i3c095[:,12]),
+                           np.std(M1215_i3c098[:,4])-  np.std(M1215_i3c098[:,5])-     np.std(M1215_i3c098[:,6])-     np.std(M1215_i3c098[:,7])-     np.std(M1215_i3c098[:,8])-    np.std(M1215_i3c098[:,9])-    np.std(M1215_i3c098[:,10])-   np.std(M1215_i3c098[:,11])-   np.std(M1215_i3c098[:,12]),
+                           np.std(M1215_i3c1[:,4])-    np.std(M1215_i3c1[:,5])-       np.std(M1215_i3c1[:,6])-       np.std(M1215_i3c1[:,7])-       np.std(M1215_i3c1[:,8])-      np.std(M1215_i3c1[:,9])-      np.std(M1215_i3c1[:,10])-     np.std(M1215_i3c1[:,11])-     np.std(M1215_i3c1[:,12])   ])
+M_overlap2Std.append([     np.std(M1215_i3c08[:,5]),   np.std(M1215_i3c09[:,5]),      np.std(M1215_i3c095[:,5]),     np.std(M1215_i3c098[:,5]),     np.std(M1215_i3c1[:,5])  ])
+M_overlap3Std.append([     np.std(M1215_i3c08[:,6]),   np.std(M1215_i3c09[:,6]),      np.std(M1215_i3c095[:,6]),     np.std(M1215_i3c098[:,6]),     np.std(M1215_i3c1[:,6])  ])
+M_overlap4Std.append([     np.std(M1215_i3c08[:,7]),   np.std(M1215_i3c09[:,7]),      np.std(M1215_i3c095[:,7]),     np.std(M1215_i3c098[:,7]),     np.std(M1215_i3c1[:,7])  ])
+M_overlap5Std.append([     np.std(M1215_i3c08[:,8]),   np.std(M1215_i3c09[:,8]),      np.std(M1215_i3c095[:,8]),     np.std(M1215_i3c098[:,8]),     np.std(M1215_i3c1[:,8])  ])
+M_overlap6Std.append([     np.std(M1215_i3c08[:,9]),   np.std(M1215_i3c09[:,9]),      np.std(M1215_i3c095[:,9]),     np.std(M1215_i3c098[:,9]),     np.std(M1215_i3c1[:,9])  ])
+M_overlap7Std.append([     np.std(M1215_i3c08[:,10]),  np.std(M1215_i3c09[:,10]),     np.std(M1215_i3c095[:,10]),    np.std(M1215_i3c098[:,10]),    np.std(M1215_i3c1[:,10]) ])
+M_overlap8Std.append([     np.std(M1215_i3c08[:,11]),  np.std(M1215_i3c09[:,11]),     np.std(M1215_i3c095[:,11]),    np.std(M1215_i3c098[:,11]),    np.std(M1215_i3c1[:,11]) ])
+M_overlap9Std.append([     np.std(M1215_i3c08[:,12]),  np.std(M1215_i3c09[:,12]),     np.std(M1215_i3c095[:,12]),    np.std(M1215_i3c098[:,12]),    np.std(M1215_i3c1[:,12]) ])
+
+H_semOverlapMeans.append([ np.mean(H1215_k5[:,4])-  np.mean(H1215_k5[:,5])-     np.mean(H1215_k5[:,6])-     np.mean(H1215_k5[:,7])-    np.mean(H1215_k5[:,8])-     np.mean(H1215_k5[:,9])-     np.mean(H1215_k5[:,10])-    np.mean(H1215_k5[:,11])-    np.mean(H1215_k5[:,12]),
+                           np.mean(H1215_k7[:,4])-  np.mean(H1215_k7[:,5])-     np.mean(H1215_k7[:,6])-     np.mean(H1215_k7[:,7])-    np.mean(H1215_k7[:,8])-     np.mean(H1215_k7[:,9])-     np.mean(H1215_k7[:,10])-    np.mean(H1215_k7[:,11])-    np.mean(H1215_k7[:,12]),
+                           np.mean(H1215_k6[:,4])-  np.mean(H1215_k6[:,5])-     np.mean(H1215_k6[:,6])-     np.mean(H1215_k6[:,7])-    np.mean(H1215_k6[:,8])-     np.mean(H1215_k6[:,9])-     np.mean(H1215_k6[:,10])-    np.mean(H1215_k6[:,11])-    np.mean(H1215_k6[:,12]),
+                           np.mean(H1215_k5[:,4])-  np.mean(H1215_k5[:,5])-     np.mean(H1215_k5[:,6])-     np.mean(H1215_k5[:,7])-    np.mean(H1215_k5[:,8])-     np.mean(H1215_k5[:,9])-     np.mean(H1215_k5[:,10])-    np.mean(H1215_k5[:,11])-    np.mean(H1215_k5[:,12]),
+                           np.mean(H1215_k4[:,4])-  np.mean(H1215_k4[:,5])-     np.mean(H1215_k4[:,6])-     np.mean(H1215_k4[:,7])-    np.mean(H1215_k4[:,8])-     np.mean(H1215_k4[:,9])-     np.mean(H1215_k4[:,10])-    np.mean(H1215_k4[:,11])-    np.mean(H1215_k4[:,12])   ])
+H_overlap2Means.append([   np.mean(H1215_k5[:,5]),  np.mean(H1215_k7[:,5]),     np.mean(H1215_k6[:,5]),     np.mean(H1215_k5[:,5]),    np.mean(H1215_k4[:,5])  ])
+H_overlap3Means.append([   np.mean(H1215_k5[:,6]),  np.mean(H1215_k7[:,6]),     np.mean(H1215_k6[:,6]),     np.mean(H1215_k5[:,6]),    np.mean(H1215_k4[:,6])  ])
+H_overlap4Means.append([   np.mean(H1215_k5[:,7]),  np.mean(H1215_k7[:,7]),     np.mean(H1215_k6[:,7]),     np.mean(H1215_k5[:,7]),    np.mean(H1215_k4[:,7])  ])
+H_overlap5Means.append([   np.mean(H1215_k5[:,8]),  np.mean(H1215_k7[:,8]),     np.mean(H1215_k6[:,8]),     np.mean(H1215_k5[:,8]),    np.mean(H1215_k4[:,8])  ])
+H_overlap6Means.append([   np.mean(H1215_k5[:,9]),  np.mean(H1215_k7[:,9]),     np.mean(H1215_k6[:,9]),     np.mean(H1215_k5[:,9]),    np.mean(H1215_k4[:,9])  ])
+H_overlap7Means.append([   np.mean(H1215_k5[:,10]), np.mean(H1215_k7[:,10]),    np.mean(H1215_k6[:,10]),    np.mean(H1215_k5[:,10]),   np.mean(H1215_k4[:,10]) ])
+H_overlap8Means.append([   np.mean(H1215_k5[:,11]), np.mean(H1215_k7[:,11]),    np.mean(H1215_k6[:,11]),    np.mean(H1215_k5[:,11]),   np.mean(H1215_k4[:,11]) ])
+H_overlap9Means.append([   np.mean(H1215_k5[:,12]), np.mean(H1215_k7[:,12]),    np.mean(H1215_k6[:,12]),    np.mean(H1215_k5[:,12]),   np.mean(H1215_k4[:,12]) ])
+H_semOverlapStd.append([   np.std(H1215_k5[:,4])-   np.std(H1215_k5[:,5])-      np.std(H1215_k5[:,6])-      np.std(H1215_k5[:,7])-     np.std(H1215_k5[:,8])-     np.std(H1215_k5[:,9])-     np.std(H1215_k5[:,10])-    np.std(H1215_k5[:,11])-    np.std(H1215_k5[:,12]),
+                           np.std(H1215_k7[:,4])-   np.std(H1215_k7[:,5])-      np.std(H1215_k7[:,6])-      np.std(H1215_k7[:,7])-     np.std(H1215_k7[:,8])-     np.std(H1215_k7[:,9])-     np.std(H1215_k7[:,10])-    np.std(H1215_k7[:,11])-    np.std(H1215_k7[:,12]),
+                           np.std(H1215_k6[:,4])-   np.std(H1215_k6[:,5])-      np.std(H1215_k6[:,6])-      np.std(H1215_k6[:,7])-     np.std(H1215_k6[:,8])-     np.std(H1215_k6[:,9])-     np.std(H1215_k6[:,10])-    np.std(H1215_k6[:,11])-    np.std(H1215_k6[:,12]),
+                           np.std(H1215_k5[:,4])-   np.std(H1215_k5[:,5])-      np.std(H1215_k5[:,6])-      np.std(H1215_k5[:,7])-     np.std(H1215_k5[:,8])-     np.std(H1215_k5[:,9])-     np.std(H1215_k5[:,10])-    np.std(H1215_k5[:,11])-    np.std(H1215_k5[:,12]),
+                           np.std(H1215_k4[:,4])-   np.std(H1215_k4[:,5])-      np.std(H1215_k4[:,6])-      np.std(H1215_k4[:,7])-     np.std(H1215_k4[:,8])-     np.std(H1215_k4[:,9])-     np.std(H1215_k4[:,10])-    np.std(H1215_k4[:,11])-    np.std(H1215_k4[:,12])   ])
+H_overlap2Std.append([     np.std(H1215_k5[:,5]),   np.std(H1215_k7[:,5]),      np.std(H1215_k6[:,5]),      np.std(H1215_k5[:,5]),     np.std(H1215_k4[:,5])  ])
+H_overlap3Std.append([     np.std(H1215_k5[:,6]),   np.std(H1215_k7[:,6]),      np.std(H1215_k6[:,6]),      np.std(H1215_k5[:,6]),     np.std(H1215_k4[:,6])  ])
+H_overlap4Std.append([     np.std(H1215_k5[:,7]),   np.std(H1215_k7[:,7]),      np.std(H1215_k6[:,7]),      np.std(H1215_k5[:,7]),     np.std(H1215_k4[:,7])  ])
+H_overlap5Std.append([     np.std(H1215_k5[:,8]),   np.std(H1215_k7[:,8]),      np.std(H1215_k6[:,8]),      np.std(H1215_k5[:,8]),     np.std(H1215_k4[:,8])  ])
+H_overlap6Std.append([     np.std(H1215_k5[:,9]),   np.std(H1215_k7[:,9]),      np.std(H1215_k6[:,9]),      np.std(H1215_k5[:,9]),     np.std(H1215_k4[:,9])  ])
+H_overlap7Std.append([     np.std(H1215_k5[:,10]),  np.std(H1215_k7[:,10]),     np.std(H1215_k6[:,10]),     np.std(H1215_k5[:,10]),    np.std(H1215_k4[:,10]) ])
+H_overlap8Std.append([     np.std(H1215_k5[:,11]),  np.std(H1215_k7[:,11]),     np.std(H1215_k6[:,11]),     np.std(H1215_k5[:,11]),    np.std(H1215_k4[:,11]) ])
+H_overlap9Std.append([     np.std(H1215_k5[:,12]),  np.std(H1215_k7[:,12]),     np.std(H1215_k6[:,12]),     np.std(H1215_k5[:,12]),    np.std(H1215_k4[:,12]) ])
+
+
+
+###   Cenário Brum2025   ###
+E_semOverlapMeans.append([ E2025_i3c08[4]-  E2025_i3c08[5]-     E2025_i3c08[6]-     E2025_i3c08[7]-     E2025_i3c08[8]-     E2025_i3c08[9]-     E2025_i3c08[10]-    E2025_i3c08[11]-    E2025_i3c08[12],
+                           E2025_i3c09[4]-  E2025_i3c09[5]-     E2025_i3c09[6]-     E2025_i3c09[7]-     E2025_i3c09[8]-     E2025_i3c09[9]-     E2025_i3c09[10]-    E2025_i3c09[11]-    E2025_i3c09[12],
+                           E2025_i3c095[4]- E2025_i3c095[5]-    E2025_i3c095[6]-    E2025_i3c095[7]-    E2025_i3c095[8]-    E2025_i3c095[9]-    E2025_i3c095[10]-   E2025_i3c095[11]-   E2025_i3c095[12],
+                           E2025_i3c098[4]- E2025_i3c098[5]-    E2025_i3c098[6]-    E2025_i3c098[7]-    E2025_i3c098[8]-    E2025_i3c098[9]-    E2025_i3c098[10]-   E2025_i3c098[11]-   E2025_i3c098[12],
+                           E2025_i3c1[4]-   E2025_i3c1[5]-      E2025_i3c1[6]-      E2025_i3c1[7]-      E2025_i3c1[8]-      E2025_i3c1[9]-      E2025_i3c1[10]-     E2025_i3c1[11]-     E2025_i3c1[12]   ])
+E_overlap2Means.append([   E2025_i3c08[5],  E2025_i3c09[5],     E2025_i3c095[5],    E2025_i3c098[5],    E2025_i3c1[5]  ])
+E_overlap3Means.append([   E2025_i3c08[6],  E2025_i3c09[6],     E2025_i3c095[6],    E2025_i3c098[6],    E2025_i3c1[6]  ])
+E_overlap4Means.append([   E2025_i3c08[7],  E2025_i3c09[7],     E2025_i3c095[7],    E2025_i3c098[7],    E2025_i3c1[7]  ])
+E_overlap5Means.append([   E2025_i3c08[8],  E2025_i3c09[8],     E2025_i3c095[8],    E2025_i3c098[8],    E2025_i3c1[8]  ])
+E_overlap6Means.append([   E2025_i3c08[9],  E2025_i3c09[9],     E2025_i3c095[9],    E2025_i3c098[9],    E2025_i3c1[9]  ])
+E_overlap7Means.append([   E2025_i3c08[10], E2025_i3c09[10],    E2025_i3c095[10],   E2025_i3c098[10],   E2025_i3c1[10] ])
+E_overlap8Means.append([   E2025_i3c08[11], E2025_i3c09[11],    E2025_i3c095[11],   E2025_i3c098[11],   E2025_i3c1[11] ])
+E_overlap9Means.append([   E2025_i3c08[12], E2025_i3c09[12],    E2025_i3c095[12],   E2025_i3c098[12],   E2025_i3c1[12] ])
+
+M_semOverlapMeans.append([ np.mean(M2025_i3c08[:,4])-  np.mean(M2025_i3c08[:,5])-     np.mean(M2025_i3c08[:,6])-     np.mean(M2025_i3c08[:,7])-     np.mean(M2025_i3c08[:,8])-     np.mean(M2025_i3c08[:,9])-     np.mean(M2025_i3c08[:,10])-    np.mean(M2025_i3c08[:,11])-    np.mean(M2025_i3c08[:,12]),
+                           np.mean(M2025_i3c09[:,4])-  np.mean(M2025_i3c09[:,5])-     np.mean(M2025_i3c09[:,6])-     np.mean(M2025_i3c09[:,7])-     np.mean(M2025_i3c09[:,8])-     np.mean(M2025_i3c09[:,9])-     np.mean(M2025_i3c09[:,10])-    np.mean(M2025_i3c09[:,11])-    np.mean(M2025_i3c09[:,12]),
+                           np.mean(M2025_i3c095[:,4])- np.mean(M2025_i3c095[:,5])-    np.mean(M2025_i3c095[:,6])-    np.mean(M2025_i3c095[:,7])-    np.mean(M2025_i3c095[:,8])-    np.mean(M2025_i3c095[:,9])-    np.mean(M2025_i3c095[:,10])-   np.mean(M2025_i3c095[:,11])-   np.mean(M2025_i3c095[:,12]),
+                           np.mean(M2025_i3c098[:,4])- np.mean(M2025_i3c098[:,5])-    np.mean(M2025_i3c098[:,6])-    np.mean(M2025_i3c098[:,7])-    np.mean(M2025_i3c098[:,8])-    np.mean(M2025_i3c098[:,9])-    np.mean(M2025_i3c098[:,10])-   np.mean(M2025_i3c098[:,11])-   np.mean(M2025_i3c098[:,12]),
+                           np.mean(M2025_i3c1[:,4])-   np.mean(M2025_i3c1[:,5])-      np.mean(M2025_i3c1[:,6])-      np.mean(M2025_i3c1[:,7])-      np.mean(M2025_i3c1[:,8])-      np.mean(M2025_i3c1[:,9])-      np.mean(M2025_i3c1[:,10])-     np.mean(M2025_i3c1[:,11])-     np.mean(M2025_i3c1[:,12])   ])
+M_overlap2Means.append([   np.mean(M2025_i3c08[:,5]),  np.mean(M2025_i3c09[:,5]),     np.mean(M2025_i3c095[:,5]),    np.mean(M2025_i3c098[:,5]),    np.mean(M2025_i3c1[:,5])  ])
+M_overlap3Means.append([   np.mean(M2025_i3c08[:,6]),  np.mean(M2025_i3c09[:,6]),     np.mean(M2025_i3c095[:,6]),    np.mean(M2025_i3c098[:,6]),    np.mean(M2025_i3c1[:,6])  ])
+M_overlap4Means.append([   np.mean(M2025_i3c08[:,7]),  np.mean(M2025_i3c09[:,7]),     np.mean(M2025_i3c095[:,7]),    np.mean(M2025_i3c098[:,7]),    np.mean(M2025_i3c1[:,7])  ])
+M_overlap5Means.append([   np.mean(M2025_i3c08[:,8]),  np.mean(M2025_i3c09[:,8]),     np.mean(M2025_i3c095[:,8]),    np.mean(M2025_i3c098[:,8]),    np.mean(M2025_i3c1[:,8])  ])
+M_overlap6Means.append([   np.mean(M2025_i3c08[:,9]),  np.mean(M2025_i3c09[:,9]),     np.mean(M2025_i3c095[:,9]),    np.mean(M2025_i3c098[:,9]),    np.mean(M2025_i3c1[:,9])  ])
+M_overlap7Means.append([   np.mean(M2025_i3c08[:,10]), np.mean(M2025_i3c09[:,10]),    np.mean(M2025_i3c095[:,10]),   np.mean(M2025_i3c098[:,10]),   np.mean(M2025_i3c1[:,10]) ])
+M_overlap8Means.append([   np.mean(M2025_i3c08[:,11]), np.mean(M2025_i3c09[:,11]),    np.mean(M2025_i3c095[:,11]),   np.mean(M2025_i3c098[:,11]),   np.mean(M2025_i3c1[:,11]) ])
+M_overlap9Means.append([   np.mean(M2025_i3c08[:,12]), np.mean(M2025_i3c09[:,12]),    np.mean(M2025_i3c095[:,12]),   np.mean(M2025_i3c098[:,12]),   np.mean(M2025_i3c1[:,12]) ])
+M_semOverlapStd.append([   np.std(M2025_i3c08[:,4])-   np.std(M2025_i3c08[:,5])-      np.std(M2025_i3c08[:,6])-      np.std(M2025_i3c08[:,7])-      np.std(M2025_i3c08[:,8])-     np.std(M2025_i3c08[:,9])-     np.std(M2025_i3c08[:,10])-    np.std(M2025_i3c08[:,11])-    np.std(M2025_i3c08[:,12]),
+                           np.std(M2025_i3c09[:,4])-   np.std(M2025_i3c09[:,5])-      np.std(M2025_i3c09[:,6])-      np.std(M2025_i3c09[:,7])-      np.std(M2025_i3c09[:,8])-     np.std(M2025_i3c09[:,9])-     np.std(M2025_i3c09[:,10])-    np.std(M2025_i3c09[:,11])-    np.std(M2025_i3c09[:,12]),
+                           np.std(M2025_i3c095[:,4])-  np.std(M2025_i3c095[:,5])-     np.std(M2025_i3c095[:,6])-     np.std(M2025_i3c095[:,7])-     np.std(M2025_i3c095[:,8])-    np.std(M2025_i3c095[:,9])-    np.std(M2025_i3c095[:,10])-   np.std(M2025_i3c095[:,11])-   np.std(M2025_i3c095[:,12]),
+                           np.std(M2025_i3c098[:,4])-  np.std(M2025_i3c098[:,5])-     np.std(M2025_i3c098[:,6])-     np.std(M2025_i3c098[:,7])-     np.std(M2025_i3c098[:,8])-    np.std(M2025_i3c098[:,9])-    np.std(M2025_i3c098[:,10])-   np.std(M2025_i3c098[:,11])-   np.std(M2025_i3c098[:,12]),
+                           np.std(M2025_i3c1[:,4])-    np.std(M2025_i3c1[:,5])-       np.std(M2025_i3c1[:,6])-       np.std(M2025_i3c1[:,7])-       np.std(M2025_i3c1[:,8])-      np.std(M2025_i3c1[:,9])-      np.std(M2025_i3c1[:,10])-     np.std(M2025_i3c1[:,11])-     np.std(M2025_i3c1[:,12])   ])
+M_overlap2Std.append([     np.std(M2025_i3c08[:,5]),   np.std(M2025_i3c09[:,5]),      np.std(M2025_i3c095[:,5]),     np.std(M2025_i3c098[:,5]),     np.std(M2025_i3c1[:,5])  ])
+M_overlap3Std.append([     np.std(M2025_i3c08[:,6]),   np.std(M2025_i3c09[:,6]),      np.std(M2025_i3c095[:,6]),     np.std(M2025_i3c098[:,6]),     np.std(M2025_i3c1[:,6])  ])
+M_overlap4Std.append([     np.std(M2025_i3c08[:,7]),   np.std(M2025_i3c09[:,7]),      np.std(M2025_i3c095[:,7]),     np.std(M2025_i3c098[:,7]),     np.std(M2025_i3c1[:,7])  ])
+M_overlap5Std.append([     np.std(M2025_i3c08[:,8]),   np.std(M2025_i3c09[:,8]),      np.std(M2025_i3c095[:,8]),     np.std(M2025_i3c098[:,8]),     np.std(M2025_i3c1[:,8])  ])
+M_overlap6Std.append([     np.std(M2025_i3c08[:,9]),   np.std(M2025_i3c09[:,9]),      np.std(M2025_i3c095[:,9]),     np.std(M2025_i3c098[:,9]),     np.std(M2025_i3c1[:,9])  ])
+M_overlap7Std.append([     np.std(M2025_i3c08[:,10]),  np.std(M2025_i3c09[:,10]),     np.std(M2025_i3c095[:,10]),    np.std(M2025_i3c098[:,10]),    np.std(M2025_i3c1[:,10]) ])
+M_overlap8Std.append([     np.std(M2025_i3c08[:,11]),  np.std(M2025_i3c09[:,11]),     np.std(M2025_i3c095[:,11]),    np.std(M2025_i3c098[:,11]),    np.std(M2025_i3c1[:,11]) ])
+M_overlap9Std.append([     np.std(M2025_i3c08[:,12]),  np.std(M2025_i3c09[:,12]),     np.std(M2025_i3c095[:,12]),    np.std(M2025_i3c098[:,12]),    np.std(M2025_i3c1[:,12]) ])
+
+H_semOverlapMeans.append([ np.mean(H2025_k6[:,4])-  np.mean(H2025_k6[:,5])-     np.mean(H2025_k6[:,6])-     np.mean(H2025_k6[:,7])-    np.mean(H2025_k6[:,8])-     np.mean(H2025_k6[:,9])-     np.mean(H2025_k6[:,10])-    np.mean(H2025_k6[:,11])-    np.mean(H2025_k6[:,12]),
+                           np.mean(H2025_k6[:,4])-  np.mean(H2025_k6[:,5])-     np.mean(H2025_k6[:,6])-     np.mean(H2025_k6[:,7])-    np.mean(H2025_k6[:,8])-     np.mean(H2025_k6[:,9])-     np.mean(H2025_k6[:,10])-    np.mean(H2025_k6[:,11])-    np.mean(H2025_k6[:,12]),
+                           np.mean(H2025_k7[:,4])-  np.mean(H2025_k7[:,5])-     np.mean(H2025_k7[:,6])-     np.mean(H2025_k7[:,7])-    np.mean(H2025_k7[:,8])-     np.mean(H2025_k7[:,9])-     np.mean(H2025_k7[:,10])-    np.mean(H2025_k7[:,11])-    np.mean(H2025_k7[:,12]),
+                           np.mean(H2025_k7[:,4])-  np.mean(H2025_k7[:,5])-     np.mean(H2025_k7[:,6])-     np.mean(H2025_k7[:,7])-    np.mean(H2025_k7[:,8])-     np.mean(H2025_k7[:,9])-     np.mean(H2025_k7[:,10])-    np.mean(H2025_k7[:,11])-    np.mean(H2025_k7[:,12]),
+                           np.mean(H2025_k6[:,4])-  np.mean(H2025_k6[:,5])-     np.mean(H2025_k6[:,6])-     np.mean(H2025_k6[:,7])-    np.mean(H2025_k6[:,8])-     np.mean(H2025_k6[:,9])-     np.mean(H2025_k6[:,10])-    np.mean(H2025_k6[:,11])-    np.mean(H2025_k6[:,12])   ])
+H_overlap2Means.append([   np.mean(H2025_k6[:,5]),  np.mean(H2025_k6[:,5]),     np.mean(H2025_k7[:,5]),     np.mean(H2025_k7[:,5]),    np.mean(H2025_k6[:,5])  ])
+H_overlap3Means.append([   np.mean(H2025_k6[:,6]),  np.mean(H2025_k6[:,6]),     np.mean(H2025_k7[:,6]),     np.mean(H2025_k7[:,6]),    np.mean(H2025_k6[:,6])  ])
+H_overlap4Means.append([   np.mean(H2025_k6[:,7]),  np.mean(H2025_k6[:,7]),     np.mean(H2025_k7[:,7]),     np.mean(H2025_k7[:,7]),    np.mean(H2025_k6[:,7])  ])
+H_overlap5Means.append([   np.mean(H2025_k6[:,8]),  np.mean(H2025_k6[:,8]),     np.mean(H2025_k7[:,8]),     np.mean(H2025_k7[:,8]),    np.mean(H2025_k6[:,8])  ])
+H_overlap6Means.append([   np.mean(H2025_k6[:,9]),  np.mean(H2025_k6[:,9]),     np.mean(H2025_k7[:,9]),     np.mean(H2025_k7[:,9]),    np.mean(H2025_k6[:,9])  ])
+H_overlap7Means.append([   np.mean(H2025_k6[:,10]), np.mean(H2025_k6[:,10]),    np.mean(H2025_k7[:,10]),    np.mean(H2025_k7[:,10]),   np.mean(H2025_k6[:,10]) ])
+H_overlap8Means.append([   np.mean(H2025_k6[:,11]), np.mean(H2025_k6[:,11]),    np.mean(H2025_k7[:,11]),    np.mean(H2025_k7[:,11]),   np.mean(H2025_k6[:,11]) ])
+H_overlap9Means.append([   np.mean(H2025_k6[:,12]), np.mean(H2025_k6[:,12]),    np.mean(H2025_k7[:,12]),    np.mean(H2025_k7[:,12]),   np.mean(H2025_k6[:,12]) ])
+H_semOverlapStd.append([   np.std(H2025_k6[:,4])-   np.std(H2025_k6[:,5])-      np.std(H2025_k6[:,6])-      np.std(H2025_k6[:,7])-     np.std(H2025_k6[:,8])-     np.std(H2025_k6[:,9])-     np.std(H2025_k6[:,10])-    np.std(H2025_k6[:,11])-    np.std(H2025_k6[:,12]),
+                           np.std(H2025_k6[:,4])-   np.std(H2025_k6[:,5])-      np.std(H2025_k6[:,6])-      np.std(H2025_k6[:,7])-     np.std(H2025_k6[:,8])-     np.std(H2025_k6[:,9])-     np.std(H2025_k6[:,10])-    np.std(H2025_k6[:,11])-    np.std(H2025_k6[:,12]),
+                           np.std(H2025_k7[:,4])-   np.std(H2025_k7[:,5])-      np.std(H2025_k7[:,6])-      np.std(H2025_k7[:,7])-     np.std(H2025_k7[:,8])-     np.std(H2025_k7[:,9])-     np.std(H2025_k7[:,10])-    np.std(H2025_k7[:,11])-    np.std(H2025_k7[:,12]),
+                           np.std(H2025_k7[:,4])-   np.std(H2025_k7[:,5])-      np.std(H2025_k7[:,6])-      np.std(H2025_k7[:,7])-     np.std(H2025_k7[:,8])-     np.std(H2025_k7[:,9])-     np.std(H2025_k7[:,10])-    np.std(H2025_k7[:,11])-    np.std(H2025_k7[:,12]),
+                           np.std(H2025_k6[:,4])-   np.std(H2025_k6[:,5])-      np.std(H2025_k6[:,6])-      np.std(H2025_k6[:,7])-     np.std(H2025_k6[:,8])-     np.std(H2025_k6[:,9])-     np.std(H2025_k6[:,10])-    np.std(H2025_k6[:,11])-    np.std(H2025_k6[:,12])   ])
+H_overlap2Std.append([     np.std(H2025_k6[:,5]),   np.std(H2025_k6[:,5]),      np.std(H2025_k7[:,5]),      np.std(H2025_k7[:,5]),     np.std(H2025_k6[:,5])  ])
+H_overlap3Std.append([     np.std(H2025_k6[:,6]),   np.std(H2025_k6[:,6]),      np.std(H2025_k7[:,6]),      np.std(H2025_k7[:,6]),     np.std(H2025_k6[:,6])  ])
+H_overlap4Std.append([     np.std(H2025_k6[:,7]),   np.std(H2025_k6[:,7]),      np.std(H2025_k7[:,7]),      np.std(H2025_k7[:,7]),     np.std(H2025_k6[:,7])  ])
+H_overlap5Std.append([     np.std(H2025_k6[:,8]),   np.std(H2025_k6[:,8]),      np.std(H2025_k7[:,8]),      np.std(H2025_k7[:,8]),     np.std(H2025_k6[:,8])  ])
+H_overlap6Std.append([     np.std(H2025_k6[:,9]),   np.std(H2025_k6[:,9]),      np.std(H2025_k7[:,9]),      np.std(H2025_k7[:,9]),     np.std(H2025_k6[:,9])  ])
+H_overlap7Std.append([     np.std(H2025_k6[:,10]),  np.std(H2025_k6[:,10]),     np.std(H2025_k7[:,10]),     np.std(H2025_k7[:,10]),    np.std(H2025_k6[:,10]) ])
+H_overlap8Std.append([     np.std(H2025_k6[:,11]),  np.std(H2025_k6[:,11]),     np.std(H2025_k7[:,11]),     np.std(H2025_k7[:,11]),    np.std(H2025_k6[:,11]) ])
+H_overlap9Std.append([     np.std(H2025_k6[:,12]),  np.std(H2025_k6[:,12]),     np.std(H2025_k7[:,12]),     np.std(H2025_k7[:,12]),    np.std(H2025_k6[:,12]) ])
+
+
+
+###   Cenário Brum2430   ###
+E_semOverlapMeans.append([ E2430_i3c08[4]-  E2430_i3c08[5]-     E2430_i3c08[6]-     E2430_i3c08[7]-     E2430_i3c08[8]-     E2430_i3c08[9]-     E2430_i3c08[10]-    E2430_i3c08[11]-    E2430_i3c08[12],
+                           E2430_i3c09[4]-  E2430_i3c09[5]-     E2430_i3c09[6]-     E2430_i3c09[7]-     E2430_i3c09[8]-     E2430_i3c09[9]-     E2430_i3c09[10]-    E2430_i3c09[11]-    E2430_i3c09[12],
+                           E2430_i3c095[4]- E2430_i3c095[5]-    E2430_i3c095[6]-    E2430_i3c095[7]-    E2430_i3c095[8]-    E2430_i3c095[9]-    E2430_i3c095[10]-   E2430_i3c095[11]-   E2430_i3c095[12],
+                           E2430_i3c098[4]- E2430_i3c098[5]-    E2430_i3c098[6]-    E2430_i3c098[7]-    E2430_i3c098[8]-    E2430_i3c098[9]-    E2430_i3c098[10]-   E2430_i3c098[11]-   E2430_i3c098[12],
+                           E2430_i3c1[4]-   E2430_i3c1[5]-      E2430_i3c1[6]-      E2430_i3c1[7]-      E2430_i3c1[8]-      E2430_i3c1[9]-      E2430_i3c1[10]-     E2430_i3c1[11]-     E2430_i3c1[12]   ])
+E_overlap2Means.append([   E2430_i3c08[5],  E2430_i3c09[5],     E2430_i3c095[5],    E2430_i3c098[5],    E2430_i3c1[5]  ])
+E_overlap3Means.append([   E2430_i3c08[6],  E2430_i3c09[6],     E2430_i3c095[6],    E2430_i3c098[6],    E2430_i3c1[6]  ])
+E_overlap4Means.append([   E2430_i3c08[7],  E2430_i3c09[7],     E2430_i3c095[7],    E2430_i3c098[7],    E2430_i3c1[7]  ])
+E_overlap5Means.append([   E2430_i3c08[8],  E2430_i3c09[8],     E2430_i3c095[8],    E2430_i3c098[8],    E2430_i3c1[8]  ])
+E_overlap6Means.append([   E2430_i3c08[9],  E2430_i3c09[9],     E2430_i3c095[9],    E2430_i3c098[9],    E2430_i3c1[9]  ])
+E_overlap7Means.append([   E2430_i3c08[10], E2430_i3c09[10],    E2430_i3c095[10],   E2430_i3c098[10],   E2430_i3c1[10] ])
+E_overlap8Means.append([   E2430_i3c08[11], E2430_i3c09[11],    E2430_i3c095[11],   E2430_i3c098[11],   E2430_i3c1[11] ])
+E_overlap9Means.append([   E2430_i3c08[12], E2430_i3c09[12],    E2430_i3c095[12],   E2430_i3c098[12],   E2430_i3c1[12] ])
+
+M_semOverlapMeans.append([ np.mean(M2430_i3c08[:,4])-  np.mean(M2430_i3c08[:,5])-     np.mean(M2430_i3c08[:,6])-     np.mean(M2430_i3c08[:,7])-     np.mean(M2430_i3c08[:,8])-     np.mean(M2430_i3c08[:,9])-     np.mean(M2430_i3c08[:,10])-    np.mean(M2430_i3c08[:,11])-    np.mean(M2430_i3c08[:,12]),
+                           np.mean(M2430_i3c09[:,4])-  np.mean(M2430_i3c09[:,5])-     np.mean(M2430_i3c09[:,6])-     np.mean(M2430_i3c09[:,7])-     np.mean(M2430_i3c09[:,8])-     np.mean(M2430_i3c09[:,9])-     np.mean(M2430_i3c09[:,10])-    np.mean(M2430_i3c09[:,11])-    np.mean(M2430_i3c09[:,12]),
+                           np.mean(M2430_i3c095[:,4])- np.mean(M2430_i3c095[:,5])-    np.mean(M2430_i3c095[:,6])-    np.mean(M2430_i3c095[:,7])-    np.mean(M2430_i3c095[:,8])-    np.mean(M2430_i3c095[:,9])-    np.mean(M2430_i3c095[:,10])-   np.mean(M2430_i3c095[:,11])-   np.mean(M2430_i3c095[:,12]),
+                           np.mean(M2430_i3c098[:,4])- np.mean(M2430_i3c098[:,5])-    np.mean(M2430_i3c098[:,6])-    np.mean(M2430_i3c098[:,7])-    np.mean(M2430_i3c098[:,8])-    np.mean(M2430_i3c098[:,9])-    np.mean(M2430_i3c098[:,10])-   np.mean(M2430_i3c098[:,11])-   np.mean(M2430_i3c098[:,12]),
+                           np.mean(M2430_i3c1[:,4])-   np.mean(M2430_i3c1[:,5])-      np.mean(M2430_i3c1[:,6])-      np.mean(M2430_i3c1[:,7])-      np.mean(M2430_i3c1[:,8])-      np.mean(M2430_i3c1[:,9])-      np.mean(M2430_i3c1[:,10])-     np.mean(M2430_i3c1[:,11])-     np.mean(M2430_i3c1[:,12])   ])
+M_overlap2Means.append([   np.mean(M2430_i3c08[:,5]),  np.mean(M2430_i3c09[:,5]),     np.mean(M2430_i3c095[:,5]),    np.mean(M2430_i3c098[:,5]),    np.mean(M2430_i3c1[:,5])  ])
+M_overlap3Means.append([   np.mean(M2430_i3c08[:,6]),  np.mean(M2430_i3c09[:,6]),     np.mean(M2430_i3c095[:,6]),    np.mean(M2430_i3c098[:,6]),    np.mean(M2430_i3c1[:,6])  ])
+M_overlap4Means.append([   np.mean(M2430_i3c08[:,7]),  np.mean(M2430_i3c09[:,7]),     np.mean(M2430_i3c095[:,7]),    np.mean(M2430_i3c098[:,7]),    np.mean(M2430_i3c1[:,7])  ])
+M_overlap5Means.append([   np.mean(M2430_i3c08[:,8]),  np.mean(M2430_i3c09[:,8]),     np.mean(M2430_i3c095[:,8]),    np.mean(M2430_i3c098[:,8]),    np.mean(M2430_i3c1[:,8])  ])
+M_overlap6Means.append([   np.mean(M2430_i3c08[:,9]),  np.mean(M2430_i3c09[:,9]),     np.mean(M2430_i3c095[:,9]),    np.mean(M2430_i3c098[:,9]),    np.mean(M2430_i3c1[:,9])  ])
+M_overlap7Means.append([   np.mean(M2430_i3c08[:,10]), np.mean(M2430_i3c09[:,10]),    np.mean(M2430_i3c095[:,10]),   np.mean(M2430_i3c098[:,10]),   np.mean(M2430_i3c1[:,10]) ])
+M_overlap8Means.append([   np.mean(M2430_i3c08[:,11]), np.mean(M2430_i3c09[:,11]),    np.mean(M2430_i3c095[:,11]),   np.mean(M2430_i3c098[:,11]),   np.mean(M2430_i3c1[:,11]) ])
+M_overlap9Means.append([   np.mean(M2430_i3c08[:,12]), np.mean(M2430_i3c09[:,12]),    np.mean(M2430_i3c095[:,12]),   np.mean(M2430_i3c098[:,12]),   np.mean(M2430_i3c1[:,12]) ])
+M_semOverlapStd.append([   np.std(M2430_i3c08[:,4])-   np.std(M2430_i3c08[:,5])-      np.std(M2430_i3c08[:,6])-      np.std(M2430_i3c08[:,7])-      np.std(M2430_i3c08[:,8])-     np.std(M2430_i3c08[:,9])-     np.std(M2430_i3c08[:,10])-    np.std(M2430_i3c08[:,11])-    np.std(M2430_i3c08[:,12]),
+                           np.std(M2430_i3c09[:,4])-   np.std(M2430_i3c09[:,5])-      np.std(M2430_i3c09[:,6])-      np.std(M2430_i3c09[:,7])-      np.std(M2430_i3c09[:,8])-     np.std(M2430_i3c09[:,9])-     np.std(M2430_i3c09[:,10])-    np.std(M2430_i3c09[:,11])-    np.std(M2430_i3c09[:,12]),
+                           np.std(M2430_i3c095[:,4])-  np.std(M2430_i3c095[:,5])-     np.std(M2430_i3c095[:,6])-     np.std(M2430_i3c095[:,7])-     np.std(M2430_i3c095[:,8])-    np.std(M2430_i3c095[:,9])-    np.std(M2430_i3c095[:,10])-   np.std(M2430_i3c095[:,11])-   np.std(M2430_i3c095[:,12]),
+                           np.std(M2430_i3c098[:,4])-  np.std(M2430_i3c098[:,5])-     np.std(M2430_i3c098[:,6])-     np.std(M2430_i3c098[:,7])-     np.std(M2430_i3c098[:,8])-    np.std(M2430_i3c098[:,9])-    np.std(M2430_i3c098[:,10])-   np.std(M2430_i3c098[:,11])-   np.std(M2430_i3c098[:,12]),
+                           np.std(M2430_i3c1[:,4])-    np.std(M2430_i3c1[:,5])-       np.std(M2430_i3c1[:,6])-       np.std(M2430_i3c1[:,7])-       np.std(M2430_i3c1[:,8])-      np.std(M2430_i3c1[:,9])-      np.std(M2430_i3c1[:,10])-     np.std(M2430_i3c1[:,11])-     np.std(M2430_i3c1[:,12])   ])
+M_overlap2Std.append([     np.std(M2430_i3c08[:,5]),   np.std(M2430_i3c09[:,5]),      np.std(M2430_i3c095[:,5]),     np.std(M2430_i3c098[:,5]),     np.std(M2430_i3c1[:,5])  ])
+M_overlap3Std.append([     np.std(M2430_i3c08[:,6]),   np.std(M2430_i3c09[:,6]),      np.std(M2430_i3c095[:,6]),     np.std(M2430_i3c098[:,6]),     np.std(M2430_i3c1[:,6])  ])
+M_overlap4Std.append([     np.std(M2430_i3c08[:,7]),   np.std(M2430_i3c09[:,7]),      np.std(M2430_i3c095[:,7]),     np.std(M2430_i3c098[:,7]),     np.std(M2430_i3c1[:,7])  ])
+M_overlap5Std.append([     np.std(M2430_i3c08[:,8]),   np.std(M2430_i3c09[:,8]),      np.std(M2430_i3c095[:,8]),     np.std(M2430_i3c098[:,8]),     np.std(M2430_i3c1[:,8])  ])
+M_overlap6Std.append([     np.std(M2430_i3c08[:,9]),   np.std(M2430_i3c09[:,9]),      np.std(M2430_i3c095[:,9]),     np.std(M2430_i3c098[:,9]),     np.std(M2430_i3c1[:,9])  ])
+M_overlap7Std.append([     np.std(M2430_i3c08[:,10]),  np.std(M2430_i3c09[:,10]),     np.std(M2430_i3c095[:,10]),    np.std(M2430_i3c098[:,10]),    np.std(M2430_i3c1[:,10]) ])
+M_overlap8Std.append([     np.std(M2430_i3c08[:,11]),  np.std(M2430_i3c09[:,11]),     np.std(M2430_i3c095[:,11]),    np.std(M2430_i3c098[:,11]),    np.std(M2430_i3c1[:,11]) ])
+M_overlap9Std.append([     np.std(M2430_i3c08[:,12]),  np.std(M2430_i3c09[:,12]),     np.std(M2430_i3c095[:,12]),    np.std(M2430_i3c098[:,12]),    np.std(M2430_i3c1[:,12]) ])
+
+H_semOverlapMeans.append([ np.mean(H2430_k8[:,4])-  np.mean(H2430_k8[:,5])-     np.mean(H2430_k8[:,6])-     np.mean(H2430_k8[:,7])-    np.mean(H2430_k8[:,8])-     np.mean(H2430_k8[:,9])-     np.mean(H2430_k8[:,10])-    np.mean(H2430_k8[:,11])-    np.mean(H2430_k8[:,12]),
+                           np.mean(H2430_k5[:,4])-  np.mean(H2430_k5[:,5])-     np.mean(H2430_k5[:,6])-     np.mean(H2430_k5[:,7])-    np.mean(H2430_k5[:,8])-     np.mean(H2430_k5[:,9])-     np.mean(H2430_k5[:,10])-    np.mean(H2430_k5[:,11])-    np.mean(H2430_k5[:,12]),
+                           np.mean(H2430_k6[:,4])-  np.mean(H2430_k6[:,5])-     np.mean(H2430_k6[:,6])-     np.mean(H2430_k6[:,7])-    np.mean(H2430_k6[:,8])-     np.mean(H2430_k6[:,9])-     np.mean(H2430_k6[:,10])-    np.mean(H2430_k6[:,11])-    np.mean(H2430_k6[:,12]),
+                           np.mean(H2430_k6[:,4])-  np.mean(H2430_k6[:,5])-     np.mean(H2430_k6[:,6])-     np.mean(H2430_k6[:,7])-    np.mean(H2430_k6[:,8])-     np.mean(H2430_k6[:,9])-     np.mean(H2430_k6[:,10])-    np.mean(H2430_k6[:,11])-    np.mean(H2430_k6[:,12]),
+                           np.mean(H2430_k6[:,4])-  np.mean(H2430_k6[:,5])-     np.mean(H2430_k6[:,6])-     np.mean(H2430_k6[:,7])-    np.mean(H2430_k6[:,8])-     np.mean(H2430_k6[:,9])-     np.mean(H2430_k6[:,10])-    np.mean(H2430_k6[:,11])-    np.mean(H2430_k6[:,12])   ])
+H_overlap2Means.append([   np.mean(H2430_k8[:,5]),  np.mean(H2430_k5[:,5]),     np.mean(H2430_k6[:,5]),     np.mean(H2430_k6[:,5]),    np.mean(H2430_k6[:,5])  ])
+H_overlap3Means.append([   np.mean(H2430_k8[:,6]),  np.mean(H2430_k5[:,6]),     np.mean(H2430_k6[:,6]),     np.mean(H2430_k6[:,6]),    np.mean(H2430_k6[:,6])  ])
+H_overlap4Means.append([   np.mean(H2430_k8[:,7]),  np.mean(H2430_k5[:,7]),     np.mean(H2430_k6[:,7]),     np.mean(H2430_k6[:,7]),    np.mean(H2430_k6[:,7])  ])
+H_overlap5Means.append([   np.mean(H2430_k8[:,8]),  np.mean(H2430_k5[:,8]),     np.mean(H2430_k6[:,8]),     np.mean(H2430_k6[:,8]),    np.mean(H2430_k6[:,8])  ])
+H_overlap6Means.append([   np.mean(H2430_k8[:,9]),  np.mean(H2430_k5[:,9]),     np.mean(H2430_k6[:,9]),     np.mean(H2430_k6[:,9]),    np.mean(H2430_k6[:,9])  ])
+H_overlap7Means.append([   np.mean(H2430_k8[:,10]), np.mean(H2430_k5[:,10]),    np.mean(H2430_k6[:,10]),    np.mean(H2430_k6[:,10]),   np.mean(H2430_k6[:,10]) ])
+H_overlap8Means.append([   np.mean(H2430_k8[:,11]), np.mean(H2430_k5[:,11]),    np.mean(H2430_k6[:,11]),    np.mean(H2430_k6[:,11]),   np.mean(H2430_k6[:,11]) ])
+H_overlap9Means.append([   np.mean(H2430_k8[:,12]), np.mean(H2430_k5[:,12]),    np.mean(H2430_k6[:,12]),    np.mean(H2430_k6[:,12]),   np.mean(H2430_k6[:,12]) ])
+H_semOverlapStd.append([   np.std(H2430_k8[:,4])-   np.std(H2430_k8[:,5])-      np.std(H2430_k8[:,6])-      np.std(H2430_k8[:,7])-     np.std(H2430_k8[:,8])-     np.std(H2430_k8[:,9])-     np.std(H2430_k8[:,10])-    np.std(H2430_k8[:,11])-    np.std(H2430_k8[:,12]),
+                           np.std(H2430_k5[:,4])-   np.std(H2430_k5[:,5])-      np.std(H2430_k5[:,6])-      np.std(H2430_k5[:,7])-     np.std(H2430_k5[:,8])-     np.std(H2430_k5[:,9])-     np.std(H2430_k5[:,10])-    np.std(H2430_k5[:,11])-    np.std(H2430_k5[:,12]),
+                           np.std(H2430_k6[:,4])-   np.std(H2430_k6[:,5])-      np.std(H2430_k6[:,6])-      np.std(H2430_k6[:,7])-     np.std(H2430_k6[:,8])-     np.std(H2430_k6[:,9])-     np.std(H2430_k6[:,10])-    np.std(H2430_k6[:,11])-    np.std(H2430_k6[:,12]),
+                           np.std(H2430_k6[:,4])-   np.std(H2430_k6[:,5])-      np.std(H2430_k6[:,6])-      np.std(H2430_k6[:,7])-     np.std(H2430_k6[:,8])-     np.std(H2430_k6[:,9])-     np.std(H2430_k6[:,10])-    np.std(H2430_k6[:,11])-    np.std(H2430_k6[:,12]),
+                           np.std(H2430_k6[:,4])-   np.std(H2430_k6[:,5])-      np.std(H2430_k6[:,6])-      np.std(H2430_k6[:,7])-     np.std(H2430_k6[:,8])-     np.std(H2430_k6[:,9])-     np.std(H2430_k6[:,10])-    np.std(H2430_k6[:,11])-    np.std(H2430_k6[:,12])   ])
+H_overlap2Std.append([     np.std(H2430_k8[:,5]),   np.std(H2430_k5[:,5]),      np.std(H2430_k6[:,5]),      np.std(H2430_k6[:,5]),     np.std(H2430_k6[:,5])  ])
+H_overlap3Std.append([     np.std(H2430_k8[:,6]),   np.std(H2430_k5[:,6]),      np.std(H2430_k6[:,6]),      np.std(H2430_k6[:,6]),     np.std(H2430_k6[:,6])  ])
+H_overlap4Std.append([     np.std(H2430_k8[:,7]),   np.std(H2430_k5[:,7]),      np.std(H2430_k6[:,7]),      np.std(H2430_k6[:,7]),     np.std(H2430_k6[:,7])  ])
+H_overlap5Std.append([     np.std(H2430_k8[:,8]),   np.std(H2430_k5[:,8]),      np.std(H2430_k6[:,8]),      np.std(H2430_k6[:,8]),     np.std(H2430_k6[:,8])  ])
+H_overlap6Std.append([     np.std(H2430_k8[:,9]),   np.std(H2430_k5[:,9]),      np.std(H2430_k6[:,9]),      np.std(H2430_k6[:,9]),     np.std(H2430_k6[:,9])  ])
+H_overlap7Std.append([     np.std(H2430_k8[:,10]),  np.std(H2430_k5[:,10]),     np.std(H2430_k6[:,10]),     np.std(H2430_k6[:,10]),    np.std(H2430_k6[:,10]) ])
+H_overlap8Std.append([     np.std(H2430_k8[:,11]),  np.std(H2430_k5[:,11]),     np.std(H2430_k6[:,11]),     np.std(H2430_k6[:,11]),    np.std(H2430_k6[:,11]) ])
+H_overlap9Std.append([     np.std(H2430_k8[:,12]),  np.std(H2430_k5[:,12]),     np.std(H2430_k6[:,12]),     np.std(H2430_k6[:,12]),    np.std(H2430_k6[:,12]) ])
+
+
+
+###   Cenário Brum3645   ###
+E_semOverlapMeans.append([ E3645_i3c08[4]-  E3645_i3c08[5]-     E3645_i3c08[6]-     E3645_i3c08[7]-     E3645_i3c08[8]-     E3645_i3c08[9]-     E3645_i3c08[10]-    E3645_i3c08[11]-    E3645_i3c08[12],
+                           E3645_i3c09[4]-  E3645_i3c09[5]-     E3645_i3c09[6]-     E3645_i3c09[7]-     E3645_i3c09[8]-     E3645_i3c09[9]-     E3645_i3c09[10]-    E3645_i3c09[11]-    E3645_i3c09[12],
+                           E3645_i3c095[4]- E3645_i3c095[5]-    E3645_i3c095[6]-    E3645_i3c095[7]-    E3645_i3c095[8]-    E3645_i3c095[9]-    E3645_i3c095[10]-   E3645_i3c095[11]-   E3645_i3c095[12],
+                           E3645_i3c098[4]- E3645_i3c098[5]-    E3645_i3c098[6]-    E3645_i3c098[7]-    E3645_i3c098[8]-    E3645_i3c098[9]-    E3645_i3c098[10]-   E3645_i3c098[11]-   E3645_i3c098[12],
+                           E3645_i3c1[4]-   E3645_i3c1[5]-      E3645_i3c1[6]-      E3645_i3c1[7]-      E3645_i3c1[8]-      E3645_i3c1[9]-      E3645_i3c1[10]-     E3645_i3c1[11]-     E3645_i3c1[12]   ])
+E_overlap2Means.append([   E3645_i3c08[5],  E3645_i3c09[5],     E3645_i3c095[5],    E3645_i3c098[5],    E3645_i3c1[5]  ])
+E_overlap3Means.append([   E3645_i3c08[6],  E3645_i3c09[6],     E3645_i3c095[6],    E3645_i3c098[6],    E3645_i3c1[6]  ])
+E_overlap4Means.append([   E3645_i3c08[7],  E3645_i3c09[7],     E3645_i3c095[7],    E3645_i3c098[7],    E3645_i3c1[7]  ])
+E_overlap5Means.append([   E3645_i3c08[8],  E3645_i3c09[8],     E3645_i3c095[8],    E3645_i3c098[8],    E3645_i3c1[8]  ])
+E_overlap6Means.append([   E3645_i3c08[9],  E3645_i3c09[9],     E3645_i3c095[9],    E3645_i3c098[9],    E3645_i3c1[9]  ])
+E_overlap7Means.append([   E3645_i3c08[10], E3645_i3c09[10],    E3645_i3c095[10],   E3645_i3c098[10],   E3645_i3c1[10] ])
+E_overlap8Means.append([   E3645_i3c08[11], E3645_i3c09[11],    E3645_i3c095[11],   E3645_i3c098[11],   E3645_i3c1[11] ])
+E_overlap9Means.append([   E3645_i3c08[12], E3645_i3c09[12],    E3645_i3c095[12],   E3645_i3c098[12],   E3645_i3c1[12] ])
+
+M_semOverlapMeans.append([ np.mean(M3645_i3c08[:,4])-  np.mean(M3645_i3c08[:,5])-     np.mean(M3645_i3c08[:,6])-     np.mean(M3645_i3c08[:,7])-     np.mean(M3645_i3c08[:,8])-     np.mean(M3645_i3c08[:,9])-     np.mean(M3645_i3c08[:,10])-    np.mean(M3645_i3c08[:,11])-    np.mean(M3645_i3c08[:,12]),
+                           np.mean(M3645_i3c09[:,4])-  np.mean(M3645_i3c09[:,5])-     np.mean(M3645_i3c09[:,6])-     np.mean(M3645_i3c09[:,7])-     np.mean(M3645_i3c09[:,8])-     np.mean(M3645_i3c09[:,9])-     np.mean(M3645_i3c09[:,10])-    np.mean(M3645_i3c09[:,11])-    np.mean(M3645_i3c09[:,12]),
+                           np.mean(M3645_i3c095[:,4])- np.mean(M3645_i3c095[:,5])-    np.mean(M3645_i3c095[:,6])-    np.mean(M3645_i3c095[:,7])-    np.mean(M3645_i3c095[:,8])-    np.mean(M3645_i3c095[:,9])-    np.mean(M3645_i3c095[:,10])-   np.mean(M3645_i3c095[:,11])-   np.mean(M3645_i3c095[:,12]),
+                           np.mean(M3645_i3c098[:,4])- np.mean(M3645_i3c098[:,5])-    np.mean(M3645_i3c098[:,6])-    np.mean(M3645_i3c098[:,7])-    np.mean(M3645_i3c098[:,8])-    np.mean(M3645_i3c098[:,9])-    np.mean(M3645_i3c098[:,10])-   np.mean(M3645_i3c098[:,11])-   np.mean(M3645_i3c098[:,12]),
+                           np.mean(M3645_i3c1[:,4])-   np.mean(M3645_i3c1[:,5])-      np.mean(M3645_i3c1[:,6])-      np.mean(M3645_i3c1[:,7])-      np.mean(M3645_i3c1[:,8])-      np.mean(M3645_i3c1[:,9])-      np.mean(M3645_i3c1[:,10])-     np.mean(M3645_i3c1[:,11])-     np.mean(M3645_i3c1[:,12])   ])
+M_overlap2Means.append([   np.mean(M3645_i3c08[:,5]),  np.mean(M3645_i3c09[:,5]),     np.mean(M3645_i3c095[:,5]),    np.mean(M3645_i3c098[:,5]),    np.mean(M3645_i3c1[:,5])  ])
+M_overlap3Means.append([   np.mean(M3645_i3c08[:,6]),  np.mean(M3645_i3c09[:,6]),     np.mean(M3645_i3c095[:,6]),    np.mean(M3645_i3c098[:,6]),    np.mean(M3645_i3c1[:,6])  ])
+M_overlap4Means.append([   np.mean(M3645_i3c08[:,7]),  np.mean(M3645_i3c09[:,7]),     np.mean(M3645_i3c095[:,7]),    np.mean(M3645_i3c098[:,7]),    np.mean(M3645_i3c1[:,7])  ])
+M_overlap5Means.append([   np.mean(M3645_i3c08[:,8]),  np.mean(M3645_i3c09[:,8]),     np.mean(M3645_i3c095[:,8]),    np.mean(M3645_i3c098[:,8]),    np.mean(M3645_i3c1[:,8])  ])
+M_overlap6Means.append([   np.mean(M3645_i3c08[:,9]),  np.mean(M3645_i3c09[:,9]),     np.mean(M3645_i3c095[:,9]),    np.mean(M3645_i3c098[:,9]),    np.mean(M3645_i3c1[:,9])  ])
+M_overlap7Means.append([   np.mean(M3645_i3c08[:,10]), np.mean(M3645_i3c09[:,10]),    np.mean(M3645_i3c095[:,10]),   np.mean(M3645_i3c098[:,10]),   np.mean(M3645_i3c1[:,10]) ])
+M_overlap8Means.append([   np.mean(M3645_i3c08[:,11]), np.mean(M3645_i3c09[:,11]),    np.mean(M3645_i3c095[:,11]),   np.mean(M3645_i3c098[:,11]),   np.mean(M3645_i3c1[:,11]) ])
+M_overlap9Means.append([   np.mean(M3645_i3c08[:,12]), np.mean(M3645_i3c09[:,12]),    np.mean(M3645_i3c095[:,12]),   np.mean(M3645_i3c098[:,12]),   np.mean(M3645_i3c1[:,12]) ])
+M_semOverlapStd.append([   np.std(M3645_i3c08[:,4])-   np.std(M3645_i3c08[:,5])-      np.std(M3645_i3c08[:,6])-      np.std(M3645_i3c08[:,7])-      np.std(M3645_i3c08[:,8])-     np.std(M3645_i3c08[:,9])-     np.std(M3645_i3c08[:,10])-    np.std(M3645_i3c08[:,11])-    np.std(M3645_i3c08[:,12]),
+                           np.std(M3645_i3c09[:,4])-   np.std(M3645_i3c09[:,5])-      np.std(M3645_i3c09[:,6])-      np.std(M3645_i3c09[:,7])-      np.std(M3645_i3c09[:,8])-     np.std(M3645_i3c09[:,9])-     np.std(M3645_i3c09[:,10])-    np.std(M3645_i3c09[:,11])-    np.std(M3645_i3c09[:,12]),
+                           np.std(M3645_i3c095[:,4])-  np.std(M3645_i3c095[:,5])-     np.std(M3645_i3c095[:,6])-     np.std(M3645_i3c095[:,7])-     np.std(M3645_i3c095[:,8])-    np.std(M3645_i3c095[:,9])-    np.std(M3645_i3c095[:,10])-   np.std(M3645_i3c095[:,11])-   np.std(M3645_i3c095[:,12]),
+                           np.std(M3645_i3c098[:,4])-  np.std(M3645_i3c098[:,5])-     np.std(M3645_i3c098[:,6])-     np.std(M3645_i3c098[:,7])-     np.std(M3645_i3c098[:,8])-    np.std(M3645_i3c098[:,9])-    np.std(M3645_i3c098[:,10])-   np.std(M3645_i3c098[:,11])-   np.std(M3645_i3c098[:,12]),
+                           np.std(M3645_i3c1[:,4])-    np.std(M3645_i3c1[:,5])-       np.std(M3645_i3c1[:,6])-       np.std(M3645_i3c1[:,7])-       np.std(M3645_i3c1[:,8])-      np.std(M3645_i3c1[:,9])-      np.std(M3645_i3c1[:,10])-     np.std(M3645_i3c1[:,11])-     np.std(M3645_i3c1[:,12])   ])
+M_overlap2Std.append([     np.std(M3645_i3c08[:,5]),   np.std(M3645_i3c09[:,5]),      np.std(M3645_i3c095[:,5]),     np.std(M3645_i3c098[:,5]),     np.std(M3645_i3c1[:,5])  ])
+M_overlap3Std.append([     np.std(M3645_i3c08[:,6]),   np.std(M3645_i3c09[:,6]),      np.std(M3645_i3c095[:,6]),     np.std(M3645_i3c098[:,6]),     np.std(M3645_i3c1[:,6])  ])
+M_overlap4Std.append([     np.std(M3645_i3c08[:,7]),   np.std(M3645_i3c09[:,7]),      np.std(M3645_i3c095[:,7]),     np.std(M3645_i3c098[:,7]),     np.std(M3645_i3c1[:,7])  ])
+M_overlap5Std.append([     np.std(M3645_i3c08[:,8]),   np.std(M3645_i3c09[:,8]),      np.std(M3645_i3c095[:,8]),     np.std(M3645_i3c098[:,8]),     np.std(M3645_i3c1[:,8])  ])
+M_overlap6Std.append([     np.std(M3645_i3c08[:,9]),   np.std(M3645_i3c09[:,9]),      np.std(M3645_i3c095[:,9]),     np.std(M3645_i3c098[:,9]),     np.std(M3645_i3c1[:,9])  ])
+M_overlap7Std.append([     np.std(M3645_i3c08[:,10]),  np.std(M3645_i3c09[:,10]),     np.std(M3645_i3c095[:,10]),    np.std(M3645_i3c098[:,10]),    np.std(M3645_i3c1[:,10]) ])
+M_overlap8Std.append([     np.std(M3645_i3c08[:,11]),  np.std(M3645_i3c09[:,11]),     np.std(M3645_i3c095[:,11]),    np.std(M3645_i3c098[:,11]),    np.std(M3645_i3c1[:,11]) ])
+M_overlap9Std.append([     np.std(M3645_i3c08[:,12]),  np.std(M3645_i3c09[:,12]),     np.std(M3645_i3c095[:,12]),    np.std(M3645_i3c098[:,12]),    np.std(M3645_i3c1[:,12]) ])
+
+H_semOverlapMeans.append([ np.mean(H3645_k5[:,4])-  np.mean(H3645_k5[:,5])-     np.mean(H3645_k5[:,6])-     np.mean(H3645_k5[:,7])-    np.mean(H3645_k5[:,8])-     np.mean(H3645_k5[:,9])-     np.mean(H3645_k5[:,10])-    np.mean(H3645_k5[:,11])-    np.mean(H3645_k5[:,12]),
+                           np.mean(H3645_k7[:,4])-  np.mean(H3645_k7[:,5])-     np.mean(H3645_k7[:,6])-     np.mean(H3645_k7[:,7])-    np.mean(H3645_k7[:,8])-     np.mean(H3645_k7[:,9])-     np.mean(H3645_k7[:,10])-    np.mean(H3645_k7[:,11])-    np.mean(H3645_k7[:,12]),
+                           np.mean(H3645_k6[:,4])-  np.mean(H3645_k6[:,5])-     np.mean(H3645_k6[:,6])-     np.mean(H3645_k6[:,7])-    np.mean(H3645_k6[:,8])-     np.mean(H3645_k6[:,9])-     np.mean(H3645_k6[:,10])-    np.mean(H3645_k6[:,11])-    np.mean(H3645_k6[:,12]),
+                           np.mean(H3645_k6[:,4])-  np.mean(H3645_k6[:,5])-     np.mean(H3645_k6[:,6])-     np.mean(H3645_k6[:,7])-    np.mean(H3645_k6[:,8])-     np.mean(H3645_k6[:,9])-     np.mean(H3645_k6[:,10])-    np.mean(H3645_k6[:,11])-    np.mean(H3645_k6[:,12]),
+                           np.mean(H3645_k7[:,4])-  np.mean(H3645_k7[:,5])-     np.mean(H3645_k7[:,6])-     np.mean(H3645_k7[:,7])-    np.mean(H3645_k7[:,8])-     np.mean(H3645_k7[:,9])-     np.mean(H3645_k7[:,10])-    np.mean(H3645_k7[:,11])-    np.mean(H3645_k7[:,12])   ])
+H_overlap2Means.append([   np.mean(H3645_k5[:,5]),  np.mean(H3645_k7[:,5]),     np.mean(H3645_k6[:,5]),     np.mean(H3645_k6[:,5]),    np.mean(H3645_k7[:,5])  ])
+H_overlap3Means.append([   np.mean(H3645_k5[:,6]),  np.mean(H3645_k7[:,6]),     np.mean(H3645_k6[:,6]),     np.mean(H3645_k6[:,6]),    np.mean(H3645_k7[:,6])  ])
+H_overlap4Means.append([   np.mean(H3645_k5[:,7]),  np.mean(H3645_k7[:,7]),     np.mean(H3645_k6[:,7]),     np.mean(H3645_k6[:,7]),    np.mean(H3645_k7[:,7])  ])
+H_overlap5Means.append([   np.mean(H3645_k5[:,8]),  np.mean(H3645_k7[:,8]),     np.mean(H3645_k6[:,8]),     np.mean(H3645_k6[:,8]),    np.mean(H3645_k7[:,8])  ])
+H_overlap6Means.append([   np.mean(H3645_k5[:,9]),  np.mean(H3645_k7[:,9]),     np.mean(H3645_k6[:,9]),     np.mean(H3645_k6[:,9]),    np.mean(H3645_k7[:,9])  ])
+H_overlap7Means.append([   np.mean(H3645_k5[:,10]), np.mean(H3645_k7[:,10]),    np.mean(H3645_k6[:,10]),    np.mean(H3645_k6[:,10]),   np.mean(H3645_k7[:,10]) ])
+H_overlap8Means.append([   np.mean(H3645_k5[:,11]), np.mean(H3645_k7[:,11]),    np.mean(H3645_k6[:,11]),    np.mean(H3645_k6[:,11]),   np.mean(H3645_k7[:,11]) ])
+H_overlap9Means.append([   np.mean(H3645_k5[:,12]), np.mean(H3645_k7[:,12]),    np.mean(H3645_k6[:,12]),    np.mean(H3645_k6[:,12]),   np.mean(H3645_k7[:,12]) ])
+H_semOverlapStd.append([   np.std(H3645_k5[:,4])-   np.std(H3645_k5[:,5])-      np.std(H3645_k5[:,6])-      np.std(H3645_k5[:,7])-     np.std(H3645_k5[:,8])-     np.std(H3645_k5[:,9])-     np.std(H3645_k5[:,10])-    np.std(H3645_k5[:,11])-    np.std(H3645_k5[:,12]),
+                           np.std(H3645_k7[:,4])-   np.std(H3645_k7[:,5])-      np.std(H3645_k7[:,6])-      np.std(H3645_k7[:,7])-     np.std(H3645_k7[:,8])-     np.std(H3645_k7[:,9])-     np.std(H3645_k7[:,10])-    np.std(H3645_k7[:,11])-    np.std(H3645_k7[:,12]),
+                           np.std(H3645_k6[:,4])-   np.std(H3645_k6[:,5])-      np.std(H3645_k6[:,6])-      np.std(H3645_k6[:,7])-     np.std(H3645_k6[:,8])-     np.std(H3645_k6[:,9])-     np.std(H3645_k6[:,10])-    np.std(H3645_k6[:,11])-    np.std(H3645_k6[:,12]),
+                           np.std(H3645_k6[:,4])-   np.std(H3645_k6[:,5])-      np.std(H3645_k6[:,6])-      np.std(H3645_k6[:,7])-     np.std(H3645_k6[:,8])-     np.std(H3645_k6[:,9])-     np.std(H3645_k6[:,10])-    np.std(H3645_k6[:,11])-    np.std(H3645_k6[:,12]),
+                           np.std(H3645_k7[:,4])-   np.std(H3645_k7[:,5])-      np.std(H3645_k7[:,6])-      np.std(H3645_k7[:,7])-     np.std(H3645_k7[:,8])-     np.std(H3645_k7[:,9])-     np.std(H3645_k7[:,10])-    np.std(H3645_k7[:,11])-    np.std(H3645_k7[:,12])   ])
+H_overlap2Std.append([     np.std(H3645_k5[:,5]),   np.std(H3645_k7[:,5]),      np.std(H3645_k6[:,5]),      np.std(H3645_k6[:,5]),     np.std(H3645_k7[:,5])  ])
+H_overlap3Std.append([     np.std(H3645_k5[:,6]),   np.std(H3645_k7[:,6]),      np.std(H3645_k6[:,6]),      np.std(H3645_k6[:,6]),     np.std(H3645_k7[:,6])  ])
+H_overlap4Std.append([     np.std(H3645_k5[:,7]),   np.std(H3645_k7[:,7]),      np.std(H3645_k6[:,7]),      np.std(H3645_k6[:,7]),     np.std(H3645_k7[:,7])  ])
+H_overlap5Std.append([     np.std(H3645_k5[:,8]),   np.std(H3645_k7[:,8]),      np.std(H3645_k6[:,8]),      np.std(H3645_k6[:,8]),     np.std(H3645_k7[:,8])  ])
+H_overlap6Std.append([     np.std(H3645_k5[:,9]),   np.std(H3645_k7[:,9]),      np.std(H3645_k6[:,9]),      np.std(H3645_k6[:,9]),     np.std(H3645_k7[:,9])  ])
+H_overlap7Std.append([     np.std(H3645_k5[:,10]),  np.std(H3645_k7[:,10]),     np.std(H3645_k6[:,10]),     np.std(H3645_k6[:,10]),    np.std(H3645_k7[:,10]) ])
+H_overlap8Std.append([     np.std(H3645_k5[:,11]),  np.std(H3645_k7[:,11]),     np.std(H3645_k6[:,11]),     np.std(H3645_k6[:,11]),    np.std(H3645_k7[:,11]) ])
+H_overlap9Std.append([     np.std(H3645_k5[:,12]),  np.std(H3645_k7[:,12]),     np.std(H3645_k6[:,12]),     np.std(H3645_k6[:,12]),    np.std(H3645_k7[:,12]) ])
+
+fig, axs = plt.subplots(1, 4, sharey=True)
+labels = [80, 90, 95, 98, 100]
+x = np.arange(len(labels))  # the label locations
+width = 0.27  # the width of the bars
+
+###   Cenário Brum1215
+axs[0].bar(x - width,  E_semOverlapMeans[0],    width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[0].bar(x - width,  E_overlap2Means[0],      width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0])
+#axs[0].bar(x - width,  E_overlap3Means[0],      width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0]+E_overlap2Means[0])
+#axs[0].bar(x - width,  E_overlap4Means[0],      width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0]+E_overlap2Means[0]+E_overlap3Means[0])
+#axs[0].bar(x - width,  E_overlap5Means[0],      width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0]+E_overlap2Means[0]+E_overlap3Means[0]+E_overlap4Means[0])
+#axs[0].bar(x - width,  E_overlap6Means[0],      width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0]+E_overlap2Means[0]+E_overlap3Means[0]+E_overlap4Means[0]+E_overlap5Means[0])
+#axs[0].bar(x - width,  E_overlap7Means[0],      width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0]+E_overlap2Means[0]+E_overlap3Means[0]+E_overlap4Means[0]+E_overlap5Means[0]+E_overlap6Means[0])
+#axs[0].bar(x - width,  E_overlap8Means[0],      width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0]+E_overlap2Means[0]+E_overlap3Means[0]+E_overlap4Means[0]+E_overlap5Means[0]+E_overlap6Means[0]+E_overlap7Means[0])
+#axs[0].bar(x - width,  E_overlap9Means[0],      width, yerr=exact_timeStd[0],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[0]+E_overlap2Means[0]+E_overlap3Means[0]+E_overlap4Means[0]+E_overlap5Means[0]+E_overlap6Means[0]+E_overlap7Means[0]+E_overlap8Means[0])
+
+axs[0].bar(x ,         M_semOverlapMeans[0],    width, yerr=M_semOverlapStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[0].bar(x ,         M_overlap2Means[0],      width, yerr=M_overlap2Std[0] ,      label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0])
+#axs[0].bar(x ,         M_overlap3Means[0],      width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0]+M_overlap2Means[0])
+#axs[0].bar(x ,         M_overlap4Means[0],      width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0]+M_overlap2Means[0]+M_overlap3Means[0])
+#axs[0].bar(x ,         M_overlap5Means[0],      width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0]+M_overlap2Means[0]+M_overlap3Means[0]+M_overlap4Means[0])
+#axs[0].bar(x ,         M_overlap6Means[0],      width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0]+M_overlap2Means[0]+M_overlap3Means[0]+M_overlap4Means[0]+M_overlap5Means[0])
+#axs[0].bar(x ,         M_overlap7Means[0],      width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0]+M_overlap2Means[0]+M_overlap3Means[0]+M_overlap4Means[0]+M_overlap5Means[0]+M_overlap6Means[0])
+#axs[0].bar(x ,         M_overlap8Means[0],      width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0]+M_overlap2Means[0]+M_overlap3Means[0]+M_overlap4Means[0]+M_overlap5Means[0]+M_overlap6Means[0]+M_overlap7Means[0])
+#axs[0].bar(x ,         M_overlap9Means[0],      width, yerr=ga_timeStd[0] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[0]+M_overlap2Means[0]+M_overlap3Means[0]+M_overlap4Means[0]+M_overlap5Means[0]+M_overlap6Means[0]+M_overlap7Means[0]+M_overlap8Means[0])
+
+axs[0].bar(x + width,  H_semOverlapMeans[0],   width, yerr=H_semOverlapStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+axs[0].bar(x + width,  H_overlap2Means[0],     width, yerr=H_overlap2Std[0] ,    label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0])
+#axs[0].bar(x + width,  H_overlap3Means[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0]+H_overlap2Means[0])
+#axs[0].bar(x + width,  H_overlap4Means[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0]+H_overlap2Means[0]+H_overlap3Means[0])
+#axs[0].bar(x + width,  H_overlap5Means[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0]+H_overlap2Means[0]+H_overlap3Means[0]+H_overlap4Means[0])
+#axs[0].bar(x + width,  H_overlap6Means[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0]+H_overlap2Means[0]+H_overlap3Means[0]+H_overlap4Means[0]+H_overlap5Means[0])
+#axs[0].bar(x + width,  H_overlap7Means[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0]+H_overlap2Means[0]+H_overlap3Means[0]+H_overlap4Means[0]+H_overlap5Means[0]+H_overlap6Means[0])
+#axs[0].bar(x + width,  H_overlap8Means[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0]+H_overlap2Means[0]+H_overlap3Means[0]+H_overlap4Means[0]+H_overlap5Means[0]+H_overlap6Means[0]+H_overlap7Means[0])
+#axs[0].bar(x + width,  H_overlap9Means[0],     width, yerr=heur_timeStd[0] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[0]+H_overlap2Means[0]+H_overlap3Means[0]+H_overlap4Means[0]+H_overlap5Means[0]+H_overlap6Means[0]+H_overlap7Means[0]+H_overlap8Means[0])
+
+
+###   Cenário Brum2025   ###
+axs[1].bar(x - width,  E_semOverlapMeans[1],    width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[1].bar(x - width,  E_overlap2Means[1],      width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1])
+#axs[1].bar(x - width,  E_overlap3Means[1],      width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1]+E_overlap2Means[1])
+#axs[1].bar(x - width,  E_overlap4Means[1],      width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1]+E_overlap2Means[1]+E_overlap3Means[1])
+#axs[1].bar(x - width,  E_overlap5Means[1],      width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1]+E_overlap2Means[1]+E_overlap3Means[1]+E_overlap4Means[1])
+#axs[1].bar(x - width,  E_overlap6Means[1],      width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1]+E_overlap2Means[1]+E_overlap3Means[1]+E_overlap4Means[1]+E_overlap5Means[1])
+#axs[1].bar(x - width,  E_overlap7Means[1],      width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1]+E_overlap2Means[1]+E_overlap3Means[1]+E_overlap4Means[1]+E_overlap5Means[1]+E_overlap6Means[1])
+#axs[1].bar(x - width,  E_overlap8Means[1],      width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1]+E_overlap2Means[1]+E_overlap3Means[1]+E_overlap4Means[1]+E_overlap5Means[1]+E_overlap6Means[1]+E_overlap7Means[1])
+#axs[1].bar(x - width,  E_overlap9Means[1],      width, yerr=exact_timeStd[1],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[1]+E_overlap2Means[1]+E_overlap3Means[1]+E_overlap4Means[1]+E_overlap5Means[1]+E_overlap6Means[1]+E_overlap7Means[1]+E_overlap8Means[1])
+
+axs[1].bar(x ,         M_semOverlapMeans[1],    width, yerr=M_semOverlapStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[1].bar(x ,         M_overlap2Means[1],      width, yerr=M_overlap2Std[1] ,      label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1])
+#axs[1].bar(x ,         M_overlap3Means[1],      width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1]+M_overlap2Means[1])
+#axs[1].bar(x ,         M_overlap4Means[1],      width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1]+M_overlap2Means[1]+M_overlap3Means[1])
+#axs[1].bar(x ,         M_overlap5Means[1],      width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1]+M_overlap2Means[1]+M_overlap3Means[1]+M_overlap4Means[1])
+#axs[1].bar(x ,         M_overlap6Means[1],      width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1]+M_overlap2Means[1]+M_overlap3Means[1]+M_overlap4Means[1]+M_overlap5Means[1])
+#axs[1].bar(x ,         M_overlap7Means[1],      width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1]+M_overlap2Means[1]+M_overlap3Means[1]+M_overlap4Means[1]+M_overlap5Means[1]+M_overlap6Means[1])
+#axs[1].bar(x ,         M_overlap8Means[1],      width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1]+M_overlap2Means[1]+M_overlap3Means[1]+M_overlap4Means[1]+M_overlap5Means[1]+M_overlap6Means[1]+M_overlap7Means[1])
+#axs[1].bar(x ,         M_overlap9Means[1],      width, yerr=ga_timeStd[1] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[1]+M_overlap2Means[1]+M_overlap3Means[1]+M_overlap4Means[1]+M_overlap5Means[1]+M_overlap6Means[1]+M_overlap7Means[1]+M_overlap8Means[1])
+
+axs[1].bar(x + width,  H_semOverlapMeans[1],   width, yerr=H_semOverlapStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+axs[1].bar(x + width,  H_overlap2Means[1],     width, yerr=H_overlap2Std[1] ,    label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1])
+#axs[1].bar(x + width,  H_overlap3Means[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1]+H_overlap2Means[1])
+#axs[1].bar(x + width,  H_overlap4Means[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1]+H_overlap2Means[1]+H_overlap3Means[1])
+#axs[1].bar(x + width,  H_overlap5Means[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1]+H_overlap2Means[1]+H_overlap3Means[1]+H_overlap4Means[1])
+#axs[1].bar(x + width,  H_overlap6Means[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1]+H_overlap2Means[1]+H_overlap3Means[1]+H_overlap4Means[1]+H_overlap5Means[1])
+#axs[1].bar(x + width,  H_overlap7Means[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1]+H_overlap2Means[1]+H_overlap3Means[1]+H_overlap4Means[1]+H_overlap5Means[1]+H_overlap6Means[1])
+#axs[1].bar(x + width,  H_overlap8Means[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1]+H_overlap2Means[1]+H_overlap3Means[1]+H_overlap4Means[1]+H_overlap5Means[1]+H_overlap6Means[1]+H_overlap7Means[1])
+#axs[1].bar(x + width,  H_overlap9Means[1],     width, yerr=heur_timeStd[1] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[1]+H_overlap2Means[1]+H_overlap3Means[1]+H_overlap4Means[1]+H_overlap5Means[1]+H_overlap6Means[1]+H_overlap7Means[1]+H_overlap8Means[1])
+
+
+###   Cenário Brum2430   ###
+axs[2].bar(x - width,  E_semOverlapMeans[2],    width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[2].bar(x - width,  E_overlap2Means[2],      width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2])
+#axs[2].bar(x - width,  E_overlap3Means[2],      width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2]+E_overlap2Means[2])
+#axs[2].bar(x - width,  E_overlap4Means[2],      width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2]+E_overlap2Means[2]+E_overlap3Means[2])
+#axs[2].bar(x - width,  E_overlap5Means[2],      width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2]+E_overlap2Means[2]+E_overlap3Means[2]+E_overlap4Means[2])
+#axs[2].bar(x - width,  E_overlap6Means[2],      width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2]+E_overlap2Means[2]+E_overlap3Means[2]+E_overlap4Means[2]+E_overlap5Means[2])
+#axs[2].bar(x - width,  E_overlap7Means[2],      width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2]+E_overlap2Means[2]+E_overlap3Means[2]+E_overlap4Means[2]+E_overlap5Means[2]+E_overlap6Means[2])
+#axs[2].bar(x - width,  E_overlap8Means[2],      width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2]+E_overlap2Means[2]+E_overlap3Means[2]+E_overlap4Means[2]+E_overlap5Means[2]+E_overlap6Means[2]+E_overlap7Means[2])
+#axs[2].bar(x - width,  E_overlap9Means[2],      width, yerr=exact_timeStd[2],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[2]+E_overlap2Means[2]+E_overlap3Means[2]+E_overlap4Means[2]+E_overlap5Means[2]+E_overlap6Means[2]+E_overlap7Means[2]+E_overlap8Means[2])
+
+axs[2].bar(x ,         M_semOverlapMeans[2],    width, yerr=M_semOverlapStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[2].bar(x ,         M_overlap2Means[2],      width, yerr=M_overlap2Std[2] ,      label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2])
+#axs[2].bar(x ,         M_overlap3Means[2],      width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2]+M_overlap2Means[2])
+#axs[2].bar(x ,         M_overlap4Means[2],      width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2]+M_overlap2Means[2]+M_overlap3Means[2])
+#axs[2].bar(x ,         M_overlap5Means[2],      width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2]+M_overlap2Means[2]+M_overlap3Means[2]+M_overlap4Means[2])
+#axs[2].bar(x ,         M_overlap6Means[2],      width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2]+M_overlap2Means[2]+M_overlap3Means[2]+M_overlap4Means[2]+M_overlap5Means[2])
+#axs[2].bar(x ,         M_overlap7Means[2],      width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2]+M_overlap2Means[2]+M_overlap3Means[2]+M_overlap4Means[2]+M_overlap5Means[2]+M_overlap6Means[2])
+#axs[2].bar(x ,         M_overlap8Means[2],      width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2]+M_overlap2Means[2]+M_overlap3Means[2]+M_overlap4Means[2]+M_overlap5Means[2]+M_overlap6Means[2]+M_overlap7Means[2])
+#axs[2].bar(x ,         M_overlap9Means[2],      width, yerr=ga_timeStd[2] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[2]+M_overlap2Means[2]+M_overlap3Means[2]+M_overlap4Means[2]+M_overlap5Means[2]+M_overlap6Means[2]+M_overlap7Means[2]+M_overlap8Means[2])
+
+axs[2].bar(x + width,  H_semOverlapMeans[2],   width, yerr=H_semOverlapStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+axs[2].bar(x + width,  H_overlap2Means[2],     width, yerr=H_overlap2Std[2] ,    label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2])
+#axs[2].bar(x + width,  H_overlap3Means[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2]+H_overlap2Means[2])
+#axs[2].bar(x + width,  H_overlap4Means[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2]+H_overlap2Means[2]+H_overlap3Means[2])
+#axs[2].bar(x + width,  H_overlap5Means[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2]+H_overlap2Means[2]+H_overlap3Means[2]+H_overlap4Means[2])
+#axs[2].bar(x + width,  H_overlap6Means[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2]+H_overlap2Means[2]+H_overlap3Means[2]+H_overlap4Means[2]+H_overlap5Means[2])
+#axs[2].bar(x + width,  H_overlap7Means[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2]+H_overlap2Means[2]+H_overlap3Means[2]+H_overlap4Means[2]+H_overlap5Means[2]+H_overlap6Means[2])
+#axs[2].bar(x + width,  H_overlap8Means[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2]+H_overlap2Means[2]+H_overlap3Means[2]+H_overlap4Means[2]+H_overlap5Means[2]+H_overlap6Means[2]+H_overlap7Means[2])
+#axs[2].bar(x + width,  H_overlap9Means[2],     width, yerr=heur_timeStd[2] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[2]+H_overlap2Means[2]+H_overlap3Means[2]+H_overlap4Means[2]+H_overlap5Means[2]+H_overlap6Means[2]+H_overlap7Means[2]+H_overlap8Means[2])
+
+
+###   Cenário Brum3645   ###
+axs[3].bar(x - width,  E_semOverlapMeans[3],    width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7)
+axs[3].bar(x - width,  E_overlap2Means[3],      width,                         label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3])
+#axs[3].bar(x - width,  E_overlap3Means[3],      width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3]+E_overlap2Means[3])
+#axs[3].bar(x - width,  E_overlap4Means[3],      width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3]+E_overlap2Means[3]+E_overlap3Means[3])
+#axs[3].bar(x - width,  E_overlap5Means[3],      width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3]+E_overlap2Means[3]+E_overlap3Means[3]+E_overlap4Means[3])
+#axs[3].bar(x - width,  E_overlap6Means[3],      width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3]+E_overlap2Means[3]+E_overlap3Means[3]+E_overlap4Means[3]+E_overlap5Means[3])
+#axs[3].bar(x - width,  E_overlap7Means[3],      width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3]+E_overlap2Means[3]+E_overlap3Means[3]+E_overlap4Means[3]+E_overlap5Means[3]+E_overlap6Means[3])
+#axs[3].bar(x - width,  E_overlap8Means[3],      width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3]+E_overlap2Means[3]+E_overlap3Means[3]+E_overlap4Means[3]+E_overlap5Means[3]+E_overlap6Means[3]+E_overlap7Means[3])
+#axs[3].bar(x - width,  E_overlap9Means[3],      width, yerr=exact_timeStd[3],  label='E-ALLOCATOR',    color='r', edgecolor='black', linewidth=1.0, capsize=3, hatch='////', alpha=0.7, bottom=E_semOverlapMeans[3]+E_overlap2Means[3]+E_overlap3Means[3]+E_overlap4Means[3]+E_overlap5Means[3]+E_overlap6Means[3]+E_overlap7Means[3]+E_overlap8Means[3])
+
+axs[3].bar(x ,         M_semOverlapMeans[3],    width, yerr=M_semOverlapStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7)
+axs[3].bar(x ,         M_overlap2Means[3],      width, yerr=M_overlap2Std[3] ,      label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3])
+#axs[3].bar(x ,         M_overlap3Means[3],      width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3]+M_overlap2Means[3])
+#axs[3].bar(x ,         M_overlap4Means[3],      width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3]+M_overlap2Means[3]+M_overlap3Means[3])
+#axs[3].bar(x ,         M_overlap5Means[3],      width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3]+M_overlap2Means[3]+M_overlap3Means[3]+M_overlap4Means[3])
+#axs[3].bar(x ,         M_overlap6Means[3],      width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3]+M_overlap2Means[3]+M_overlap3Means[3]+M_overlap4Means[3]+M_overlap5Means[3])
+#axs[3].bar(x ,         M_overlap7Means[3],      width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3]+M_overlap2Means[3]+M_overlap3Means[3]+M_overlap4Means[3]+M_overlap5Means[3]+M_overlap6Means[3])
+#axs[3].bar(x ,         M_overlap8Means[3],      width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3]+M_overlap2Means[3]+M_overlap3Means[3]+M_overlap4Means[3]+M_overlap5Means[3]+M_overlap6Means[3]+M_overlap7Means[3])
+#axs[3].bar(x ,         M_overlap9Means[3],      width, yerr=ga_timeStd[3] ,    label='M-ALLOCATOR',    color='b', edgecolor='black', linewidth=1.0, capsize=3, hatch='....', alpha=0.7, bottom=M_semOverlapMeans[3]+M_overlap2Means[3]+M_overlap3Means[3]+M_overlap4Means[3]+M_overlap5Means[3]+M_overlap6Means[3]+M_overlap7Means[3]+M_overlap8Means[3])
+
+axs[3].bar(x + width,  H_semOverlapMeans[3],   width, yerr=H_semOverlapStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7)
+axs[3].bar(x + width,  H_overlap2Means[3],     width, yerr=H_overlap2Std[3] ,    label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3])
+#axs[3].bar(x + width,  H_overlap3Means[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3]+H_overlap2Means[3])
+#axs[3].bar(x + width,  H_overlap4Means[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3]+H_overlap2Means[3]+H_overlap3Means[3])
+#axs[3].bar(x + width,  H_overlap5Means[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3]+H_overlap2Means[3]+H_overlap3Means[3]+H_overlap4Means[3])
+#axs[3].bar(x + width,  H_overlap6Means[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3]+H_overlap2Means[3]+H_overlap3Means[3]+H_overlap4Means[3]+H_overlap5Means[3])
+#axs[3].bar(x + width,  H_overlap7Means[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3]+H_overlap2Means[3]+H_overlap3Means[3]+H_overlap4Means[3]+H_overlap5Means[3]+H_overlap6Means[3])
+#axs[3].bar(x + width,  H_overlap8Means[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3]+H_overlap2Means[3]+H_overlap3Means[3]+H_overlap4Means[3]+H_overlap5Means[3]+H_overlap6Means[3]+H_overlap7Means[3])
+#axs[3].bar(x + width,  H_overlap9Means[3],     width, yerr=heur_timeStd[3] ,  label='Heuristic',    color='y', edgecolor='black', linewidth=1.0, capsize=3, hatch='xxxx', alpha=0.7, bottom=H_semOverlapMeans[3]+H_overlap2Means[3]+H_overlap3Means[3]+H_overlap4Means[3]+H_overlap5Means[3]+H_overlap6Means[3]+H_overlap7Means[3]+H_overlap8Means[3])
+
+axs[0].grid(axis='y', alpha=0.4)
+axs[1].grid(axis='y', alpha=0.4)
+axs[2].grid(axis='y', alpha=0.4)
+axs[3].grid(axis='y', alpha=0.4)
+
+axs[0].set_title(cenarios[0])
+axs[1].set_title(cenarios[1])
+axs[2].set_title(cenarios[2])
+axs[3].set_title(cenarios[3])
+
+axs[0].set_ylabel('Overlap Area (km\u00b2)')
+
+# add a big axis, hide frame
+fig.add_subplot(111, frameon=False)
+# hide tick and tick label of the big axis
+plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+plt.xlabel("Coverage Consensus (%)")
+
+axs[0].set_xticks(x)
+axs[1].set_xticks(x)
+axs[2].set_xticks(x)
+axs[3].set_xticks(x)
+axs[0].set_xticklabels(labels)
+axs[1].set_xticklabels(labels)
+axs[2].set_xticklabels(labels)
+axs[3].set_xticklabels(labels)
+
+axs[3].legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.1)
+fig.set_size_inches(13, 3.0)
+fig.tight_layout(pad=0)
+plt.subplots_adjust(left=0.04, bottom=0.15)
 plt.show()
